@@ -49,11 +49,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[感慨一下恢复的历程]]></title>
-    <url>%2F2017%2F12%2F30%2F%E6%84%9F%E6%85%A8%E4%B8%80%E4%B8%8B%E6%81%A2%E5%A4%8D%E7%9A%84%E5%8E%86%E7%A8%8B%2F</url>
-    <content type="text"><![CDATA[因为硬盘坏了之前的本地文件都没了作为一个啥也不懂得小白痴百度好像没有直接的办法然后尝试地打算换个新账号重新来一波但是后来不知咋的找到了一个hexo-git-backup但是我好像真的不太会使啊&lt;。。。。。开始玩起消消乐&gt;莫名把之前的内容从自己网站上复制了下来&lt;不小心漏了一篇T^T&gt;然后又照着各位大佬换电脑备份这个的经验教训然后又开始配置啥啥啥的&lt;省略心酸一大把&gt;然后就可以开始换个高大上的主题最后开始把复制下来的重新整理部署上去 纪念这个硬盘坏了的2017，再见~ 沉迷王权、月初cp]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[Hello World]]></title>
     <url>%2F2017%2F12%2F30%2Fhello-world%2F</url>
     <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
