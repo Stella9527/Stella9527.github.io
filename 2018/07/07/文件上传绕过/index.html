@@ -137,7 +137,7 @@
 绕过：
     可以通过burp拦包，将原Content-Type类型该为符合要求的image/jpg或者别的类型。
 基于MIME
-&lt;?php  
+**&lt;?php  
     if (isset($_POST[&apos;Upload&apos;])) {
      $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;;
      $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]);
@@ -161,7 +161,7 @@
         else{
             echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;;  } 
             }   
-?&gt;        
+?&gt;        **
 
 3、服务端目录路径检测
 绕过：
@@ -176,7 +176,7 @@
     ④0x00截断绕过：在上传的时候，当文件系统读到0x00时，会认为文件已经结束。例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。
 
 基于黑名单
-&lt;?php
+**&lt;?php
     $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’);
     //黑名单
     if (isset($_POST[&quot;submit&quot;])){
@@ -208,7 +208,7 @@
         echo &quot;文件不合法！！&quot;;
     }    
 }
-</code></pre><p>?&gt;</p>
+</code></pre><p>?&gt;**</p>
 <pre><code>    （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名的文件才能上传
 绕过：
     ①0x00截断绕过
@@ -218,7 +218,7 @@
     IIS6.0不解析;后面的，所以提交evil.asp;.html解析为asp类型
     Nginx解析漏洞：将php文件换成其他可以通过的文件后缀，访问的时候在后面加上/.php，如evil.jpg/.php，evil.jpg会解析为php的格式
 基于白名单
-&lt;?php
+**&lt;?php
     $WhiteList=array(&apos;rar&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;bmp&apos;,&apos;gif&apos;,&apos;jpg&apos;,&apos;doc’);
     if (isset($_POST[&quot;submit&quot;])){
         $name = $_FILES[&apos;file&apos;][&apos;name’]; 
@@ -247,7 +247,7 @@
             echo &quot;文件不合法！！&quot;;
             }        
     }
-?&gt;
+?&gt;**
 
 5、服务端文件内容检测
 图像类的文件内容检测
