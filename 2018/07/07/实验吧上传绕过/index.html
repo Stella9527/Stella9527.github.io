@@ -1,8 +1,6 @@
 
 
 
-  
-
 
 
 
@@ -18,9 +16,10 @@
   
   
   
-    <meta name="description" content="">
+    <meta name="description" content="&lt; !–more–&gt;
+解题链接：http://ctf5.shiyanbar.com/web/upload/①因为没有说明上传文件的类型，因此先上传一个.png文件结果显示的页面说必须上传成后缀名为php的文件，还说了存储的路径./upload/②接着上传一个.php文件，结果显示仅支持上传jpg,gif,png文件这一题是先检测后缀名的，需要jpg的格式，但是存储的时候把名字给改...">
   
-  <title>标签: pwn [ 9527 ]</title>
+  <title>实验吧上传绕过 [ 9527 ]</title>
   
   
     <link rel="shortcut icon" href="/01.ico">
@@ -39,6 +38,24 @@
 <body>
 <div class="side-navigate hide-area">
   
+    <div class="item prev">
+      <a href="/2018/07/07/文件上传绕过/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        跟着大佬学的文件上传绕过
+      </div>
+    </div>
+  
+  
+    <div class="item next">
+      <a href="/2018/07/07/DVWA文件上传/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        DVWA文件上传
+      </div>
+    </div>
   
 </div>
 <div id="outer-container" class="hide-area">
@@ -71,7 +88,7 @@
           </li>
         
           
-            <li class="active">
+            <li>
           
             <a href="/tags">Tags</a>
             
@@ -103,102 +120,58 @@
     <div id="content-inner">
       
       
-  <div id="tag">
-    <h1>pwn</h1>
-    
+  <article id="post">
+    <h1>实验吧上传绕过</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">撰写于 2018-07-07</span>
+      
+        <span id = "post-title-updated">修改于 2018-07-07</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      标签
       
       
         
-      
-      
-    
-      
-      
         
-          
-        
+        <a href="/tags/web/">web</a>
       
+      </span>
       
-      <div class="post-title-item">
-  
-  <a href="/2017/12/30/babypwn3学习经历/">
-  
-    babypwn3学习经历
-  
-  </a>
-  <p class="page-title-sub">
-    <span id = "post-title-date">12-30</span>
+    </p>
     
-    
-    <span id = "post-title-tags">
-    标签
-    
-    
-      
-      
-      <a href="/tags/pwn/">pwn</a>
-    
-    </span>
-    
-    
-      <br>
-      
-      
-    
-  </p>
-  
-</div>
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-        
-      
-      
-    
-      
-      
-        
-      
-      
+    <p>&lt; !–more–&gt;</p>
+<p>解题链接：<a href="http://ctf5.shiyanbar.com/web/upload/" target="_blank" rel="noopener">http://ctf5.shiyanbar.com/web/upload/</a><br>①因为没有说明上传文件的类型，因此先上传一个.png文件<br><img src="/2018/07/07/实验吧上传绕过/01.png" alt=""><br>结果显示的页面说必须上传成后缀名为php的文件，还说了存储的路径./upload/<br><img src="/2018/07/07/实验吧上传绕过/02.png" alt=""><br>②接着上传一个.php文件，结果显示仅支持上传jpg,gif,png文件<br><img src="/2018/07/07/实验吧上传绕过/03.png" alt=""><br>这一题是先检测后缀名的，需要jpg的格式，但是存储的时候把名字给改了。最后的一句提示是需要上传成文件后缀名为php的，这个php格式的后缀名和检测的jpg格式矛盾了，用%00截断<br>③还是上传php文件，然后抓包，把文件后缀名改成.php，还要%00截断<br><img src="/2018/07/07/实验吧上传绕过/04.png" alt=""><br>然后在Repeater里面，在上传的路径的upload后加上相应的php文件名，在加几个空格做标记，在用hex查看标记，在第一个20改成00做截断<br><img src="/2018/07/07/实验吧上传绕过/05.png" alt=""><br>返回到Repeater的Raw的页面，可以发现已经被截断了<br><img src="/2018/07/07/实验吧上传绕过/06.png" alt=""><br>点GO以后可以看到flag<br><img src="/2018/07/07/实验吧上传绕过/07.png" alt=""></p>
+<p>flag：flag{SimCTF_huachuan}</p>
+
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">显示目录</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">隐藏目录</button>
+  <div class="random-toc">
+    <h2>目录</h2>
     
   </div>
+</div>
 
   
+<nav id="pagination">
+  
+    <a href="/2018/07/07/文件上传绕过/" class="prev">&larr; 上一篇 跟着大佬学的文件上传绕过</a>
+  
+
+  
+
+  
+    <a href="/2018/07/07/DVWA文件上传/" class="next">下一篇 DVWA文件上传 &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
 
       
       
@@ -316,6 +289,8 @@ var unsplashConfig = {"gravity":"north"};
 var turnoffBackgroundImage = false;
 
 
+
+  turnoffBackgroundImage = true;
 
 
 var backgroundColor = "34495E";
