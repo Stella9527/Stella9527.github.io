@@ -138,21 +138,16 @@
 <p>②nikto -list-plugins：查看各种插件类型（；例如auth、fileops、ssl、tests等等，提一点shellshock！）<br>如果通过命令不行，那就去找这个网址：<a href="http://cirt.net/nikto/UPDATES，会有很多版本" target="_blank" rel="noopener">http://cirt.net/nikto/UPDATES，会有很多版本</a></p>
 <p>③nikto -host <a href="http://1.1.1.1" target="_blank" rel="noopener">http://1.1.1.1</a> （后面的URL是扫描的目标，可以用靶机玩）<br>nikto -host <a href="http://192.168.1.109/dvwa/（扫描192.168.1.109的dvwa目录）" target="_blank" rel="noopener">http://192.168.1.109/dvwa/（扫描192.168.1.109的dvwa目录）</a></p>
 <p>④nikto -host 192.168.1.109 port 80,443（扫描端口，多个端口可以一起来指定）<br>nikto -host 192.168.1.109 port 80（会用各种http的方式去连接，去检测端口）</p>
-<p>⑤nikto -host www.baidu.com -port 443 -ssl（www.baidu.com是主机名，https默认的端口为443，-ssl：检测https）<br>    解析结果举例：<br>    (1)扫百度<br>    Target IP：主机的ip<br>    Target Hostname：主机名<br>    Target Port：端口<br>    SSL Info：使用证书的相关信息 （Subject：证书的信息；Cipers：证书加密的方式等等。<br><img src="/2018/07/10/笔记扫描工具nikto/01.png" alt=""><br>    robots.txt contains 103 entries which should be manually viewed：这句话大致讲：很需要查看一下这个robots.txt文件<br><img src="/2018/07/10/笔记扫描工具nikto/02.png" alt=""></p>
+<p>⑤nikto -host www.baidu.com -port 443 -ssl（www.baidu.com是主机名，https默认的端口为443，-ssl：检测https）<br>解析结果举例：<br>(1)扫百度<br>    Target IP：主机的ip<br>    Target Hostname：主机名<br>    Target Port：端口<br>    SSL Info：使用证书的相关信息 （Subject：证书的信息；Cipers：证书加密的方式等等。<br><img src="/2018/07/10/笔记扫描工具nikto/01.png" alt=""><br>    robots.txt contains 103 entries which should be manually viewed：这句话大致讲：很需要查看一下这个robots.txt文件<br><img src="/2018/07/10/笔记扫描工具nikto/02.png" alt=""></p>
 <pre><code>(2)扫自己的靶机
 </code></pre><p><img src="/2018/07/10/笔记扫描工具nikto/03.png" alt=""></p>
-<pre><code>1. X-XSS-Protection 响应头是Internet Explorer，Chrome和Safari的一个功能，当检测到跨站脚本攻击 (XSS)时，浏览器将停止加载页面。例如：
-    X-XSS-Protection: 0 禁止XSS过滤
-    X-XSS-Protection: 1 启用XSS过滤（通常浏览器是默认的）。 如果检测到跨站脚本攻击，浏览器将清除页面（删除不安全的部分）。
-    X-XSS-Protection: 1; mode=block 启用XSS过滤。 如果检测到攻击，浏览器将不会清除页面，而是阻止页面加载。
-    X-XSS-Protection: 1; report=&lt;reporting-uri&gt; 启用XSS过滤。 如果检测到跨站脚本攻击，浏览器将清除页面并使用CSP report-uri指令的功能发送违规报告。
-2. X-Content-Type-Options 响应首部相当于一个提示标志，MIME类型嗅探
-3. Apache的版本为2.2.8，是过期的版本，当前至少应该是2.4.12版本
-</code></pre><p><img src="/2018/07/10/笔记扫描工具nikto/04.png" alt=""></p>
-<pre><code>4. HTTP TRACE method is active……. &lt;script&gt;(‘Vulnerable’)&lt;/script&gt;
-TRACE请求方式：回显服务器收到的请求，主要用于测试或诊断，可用来进行跨站脚本（XSS）攻击，这种攻击方式又称为跨站跟踪攻击（XST）。
-5. /phpMyAdmin/changelog.php…….能知道后端数据库使用MySQL，可以有针对性的注入
-</code></pre><p><img src="/2018/07/10/笔记扫描工具nikto/05.png" alt=""></p>
+<ol>
+<li>X-XSS-Protection 响应头是Internet Explorer，Chrome和Safari的一个功能，当检测到跨站脚本攻击 (XSS)时，浏览器将停止加载页面。例如：<br> X-XSS-Protection: 0 禁止XSS过滤<br> X-XSS-Protection: 1 启用XSS过滤（通常浏览器是默认的）。 如果检测到跨站脚本攻击，浏览器将清除页面（删除不安全的部分）。<br> X-XSS-Protection: 1; mode=block 启用XSS过滤。 如果检测到攻击，浏览器将不会清除页面，而是阻止页面加载。<br> X-XSS-Protection: 1; report=<reporting-uri> 启用XSS过滤。 如果检测到跨站脚本攻击，浏览器将清除页面并使用CSP report-uri指令的功能发送违规报告。</reporting-uri></li>
+<li>X-Content-Type-Options 响应首部相当于一个提示标志，MIME类型嗅探</li>
+<li>Apache的版本为2.2.8，是过期的版本，当前至少应该是2.4.12版本<br><img src="/2018/07/10/笔记扫描工具nikto/04.png" alt=""></li>
+<li>HTTP TRACE method is active……. <script>(‘Vulnerable’)</script><br>TRACE请求方式：回显服务器收到的请求，主要用于测试或诊断，可用来进行跨站脚本（XSS）攻击，这种攻击方式又称为跨站跟踪攻击（XST）。</li>
+<li>/phpMyAdmin/changelog.php…….能知道后端数据库使用MySQL，可以有针对性的注入<br><img src="/2018/07/10/笔记扫描工具nikto/05.png" alt=""></li>
+</ol>
 <p>⑥nikto -host host.txt<br>将需要扫描的多个网站的地址放在txt文档里，然后扫描<br>txt文档中的格式：1. 192.168.60.90:80; 2. <a href="https://192.168.60.90:8443" target="_blank" rel="noopener">https://192.168.60.90:8443</a>; 3. 192.168.60.90（默认扫描80端口）</p>
 <p>⑦nmap -p80 192.168.1.0/24 -oG - | nikto -host –<br><img src="/2018/07/10/笔记扫描工具nikto/06.png" alt=""><br>结合nmap一起扫描，-oG指输出内容，第一个”-“表示输出的结果，再用|给nikto扫，第二个”-“表示nmap扫描出来的开放的端口的IP地址</p>
 <p>⑧nikto -host <a href="https://www.baidu.com" target="_blank" rel="noopener">https://www.baidu.com</a> -useproxy <a href="http://localhost:8087" target="_blank" rel="noopener">http://localhost:8087</a> 用代理去扫描</p>
