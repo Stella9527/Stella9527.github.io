@@ -222,9 +222,34 @@ if (isset($_POST[&apos;submit&apos;])) {
     }
 }
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">**黑名单检测**</span><br><span class="line"></span><br><span class="line">检测的名单有很多，大小写，加空格绕过方式不行，将后缀名改成php5、php7等等也不行，可以用.htaccess重写文件解析规则绕过，如上题</span><br><span class="line"></span><br><span class="line">2018/7/11 18:37:02 </span><br><span class="line"></span><br><span class="line">## Pass-05 </span><br><span class="line">### Pass-05源码：</span><br></pre></td></tr></table></figure>
-</code></pre><p>$is_upload = false;<br>$msg = null;<br>if (isset($_POST[‘submit’])) {<br>if (file_exists($UPLOAD_ADDR)) {<br>$deny_ext = array(“.php”,”.php5”,”.php4”,”.php3”,”.php2”,”.html”,”.htm”,”.phtml”,”.pHp”,”.pHp5”,”.pHp4”,”.pHp3”,”.pHp2”,”.Html”,”.Htm”,”.pHtml”,”.jsp”,”.jspa”,”.jspx”,”.jsw”,”.jsv”,”.jspf”,”.jtml”,”.jSp”,”.jSpx”,”.jSpa”,”.jSw”,”.jSv”,”.jSpf”,”.jHtml”,”.asp”,”.aspx”,”.asa”,”.asax”,”.ascx”,”.ashx”,”.asmx”,”.cer”,”.aSp”,”.aSpx”,”.aSa”,”.aSax”,”.aScx”,”.aShx”,”.aSmx”,”.cEr”,”.sWf”,”.swf”,”.htaccess”);<br>$file_name = trim($_FILES[‘upload_file’][‘name’]);<br>$file_name = deldot($file_name);//删除文件名末尾的点<br>$file_ext = strrchr($file_name, ‘.’);<br>$file_ext = str_ireplace(‘::$DATA’, ‘’, $file_ext);//去除字符串::$DATA<br>$file_ext = trim($file_ext); //首尾去空</p>
-<p>if (!in_array($file_ext, $deny_ext)) {<br>if (move_uploaded_file($_FILES[‘upload_file’][‘tmp_name’], $UPLOAD_ADDR . ‘/‘ . $_FILES[‘upload_file’][‘name’])) {<br>$img_path = $UPLOAD_ADDR . ‘/‘ . $file_name;<br>$is_upload = true;<br>}<br>}<br>else {<br>$msg = ‘此文件不允许上传’;<br>}<br>}<br>else {<br>$msg = $UPLOAD_ADDR . ‘文件夹不存在,请手工创建！’;<br>}<br>}<br>```</p>
-<p><strong>黑名单检测</strong><br>这次检测没有大小写转化，因此可以将文件后缀名改成部分大写绕过</p>
+
+    $is_upload = false;
+    $msg = null;
+    if (isset($_POST[&apos;submit&apos;])) {
+    if (file_exists($UPLOAD_ADDR)) {
+    $deny_ext = array(&quot;.php&quot;,&quot;.php5&quot;,&quot;.php4&quot;,&quot;.php3&quot;,&quot;.php2&quot;,&quot;.html&quot;,&quot;.htm&quot;,&quot;.phtml&quot;,&quot;.pHp&quot;,&quot;.pHp5&quot;,&quot;.pHp4&quot;,&quot;.pHp3&quot;,&quot;.pHp2&quot;,&quot;.Html&quot;,&quot;.Htm&quot;,&quot;.pHtml&quot;,&quot;.jsp&quot;,&quot;.jspa&quot;,&quot;.jspx&quot;,&quot;.jsw&quot;,&quot;.jsv&quot;,&quot;.jspf&quot;,&quot;.jtml&quot;,&quot;.jSp&quot;,&quot;.jSpx&quot;,&quot;.jSpa&quot;,&quot;.jSw&quot;,&quot;.jSv&quot;,&quot;.jSpf&quot;,&quot;.jHtml&quot;,&quot;.asp&quot;,&quot;.aspx&quot;,&quot;.asa&quot;,&quot;.asax&quot;,&quot;.ascx&quot;,&quot;.ashx&quot;,&quot;.asmx&quot;,&quot;.cer&quot;,&quot;.aSp&quot;,&quot;.aSpx&quot;,&quot;.aSa&quot;,&quot;.aSax&quot;,&quot;.aScx&quot;,&quot;.aShx&quot;,&quot;.aSmx&quot;,&quot;.cEr&quot;,&quot;.sWf&quot;,&quot;.swf&quot;,&quot;.htaccess&quot;);
+    $file_name = trim($_FILES[&apos;upload_file&apos;][&apos;name&apos;]);
+    $file_name = deldot($file_name);//删除文件名末尾的点
+    $file_ext = strrchr($file_name, &apos;.&apos;);
+    $file_ext = str_ireplace(&apos;::$DATA&apos;, &apos;&apos;, $file_ext);//去除字符串::$DATA
+    $file_ext = trim($file_ext); //首尾去空
+
+    if (!in_array($file_ext, $deny_ext)) {
+    if (move_uploaded_file($_FILES[&apos;upload_file&apos;][&apos;tmp_name&apos;], $UPLOAD_ADDR . &apos;/&apos; . $_FILES[&apos;upload_file&apos;][&apos;name&apos;])) {
+    $img_path = $UPLOAD_ADDR . &apos;/&apos; . $file_name;
+    $is_upload = true;
+    }
+    } 
+    else {
+    $msg = &apos;此文件不允许上传&apos;;
+    }
+    } 
+    else {
+    $msg = $UPLOAD_ADDR . &apos;文件夹不存在,请手工创建！&apos;;
+    }
+    }
+    ```
+</code></pre><p><strong>黑名单检测</strong><br>这次检测没有大小写转化，因此可以将文件后缀名改成部分大写绕过</p>
 <p><img src="/2018/07/11/test/upload-labs/07.png" alt=""></p>
 <p>上传成功</p>
 <p>蚁剑：shell url：<a href="http://127.0.0.1/upload-labs/upload/eval05.PhP" target="_blank" rel="noopener">http://127.0.0.1/upload-labs/upload/eval05.PhP</a></p>
