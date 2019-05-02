@@ -1,0 +1,406 @@
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="author" content="9527">
+  
+  
+  
+  
+    <meta name="description" content="在kali里装docker 
+docker需要Linux下大于3.10，并且是64位的机器查看版本：uname -a
+更新源编辑源的文件
+gedit /etc/apt/sources.list
+添加以下任意一个源
+1) kali官方源
+deb http://http.kali.org/kali kali-rolling main non-free contrib
+2) 中科大kali源
+de...">
+  
+  <title>docker使用 [ 9527 ]</title>
+  
+  
+    <link rel="shortcut icon" href="/01.ico">
+  
+  
+  <link rel="stylesheet" href="/css/random.css">
+<link rel="stylesheet" href="/css/vegas.min.css">
+<link rel="stylesheet" href="/css/highlight-railscasts.css">
+<link rel="stylesheet" href="/css/jquery.fancybox.css">
+<link rel="stylesheet" href="/css/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/jquery.fancybox-thumbs.css">
+<link rel="stylesheet" href="/css/plyr.css">
+  
+</head>
+
+<body>
+<div class="side-navigate hide-area">
+  
+    <div class="item prev">
+      <a href="/2018/07/19/DVWA命令执行漏洞/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        DVWA命令执行漏洞
+      </div>
+    </div>
+  
+  
+    <div class="item next">
+      <a href="/2018/07/11/upload-labs/">
+        <div class="item-icon"></div>
+      </a>
+      <div class="item-title">
+        upload-labs（1-5）
+      </div>
+    </div>
+  
+</div>
+<div id="outer-container" class="hide-area">
+<div id="container">
+  <div id="menu-outer" class="slide-down">
+    <div id="menu-inner">
+      <div id="brand">
+        
+        <a onClick="openUserCard()">
+          <img id="avatar" src="/background.png"/>
+          <div id="homelink">9527</div>
+        </a>
+      </div>
+      <div id="menu-list">
+        <ul>
+        
+        
+          
+            <li>
+          
+            <a href="/index.html">Home</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/archives">Archives</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/tags">Tags</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/categories">Categories</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="/about">About</a>
+            
+          </li>
+        
+          
+            <li>
+          
+            <a href="https://github.com/Stella9527">Github</a>
+            
+          </li>
+        
+        </ul>
+      </div>
+      <div id="show-menu">
+        <button>Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-outer">
+    <div id="content-inner">
+      
+      
+  <article id="post">
+    <h1>docker使用</h1>
+    <p class="page-title-sub">
+      <span id = "post-title-date">Created at 2018-07-14</span>
+      
+        <span id = "post-title-updated">Updated at 2018-07-15</span>
+      
+      
+      
+      <span id = "post-title-tags">
+      Tag
+      
+      
+        
+        
+        <a href="/tags/docker/">docker</a>
+      
+      </span>
+      
+    </p>
+    
+    <a id="more"></a>
+<p> 在kali里装docker </p>
+<h1 id="docker需要Linux下大于3-10，并且是64位的机器"><a href="#docker需要Linux下大于3-10，并且是64位的机器" class="headerlink" title="docker需要Linux下大于3.10，并且是64位的机器"></a><strong>docker需要Linux下大于3.10，并且是64位的机器</strong></h1><p>查看版本：<br><code>uname -a</code></p>
+<h1 id="更新源"><a href="#更新源" class="headerlink" title="更新源"></a><strong>更新源</strong></h1><p>编辑源的文件</p>
+<p><code>gedit /etc/apt/sources.list</code></p>
+<p>添加以下任意一个源</p>
+<p>1) kali官方源</p>
+<p><code>deb http://http.kali.org/kali kali-rolling main non-free contrib</code></p>
+<p>2) 中科大kali源</p>
+<p><code>deb http://mirrors.ustc.edu.cn/kali kali-rolling main non-free contrib</code></p>
+<p><code>deb-src http://mirrors.ustc.edu.cn/kali kali-rolling main non-free contrib</code>    </p>
+<p><code>deb http://mirrors.ustc.edu.cn/kali-security kali-current/updates main contrib non-free</code></p>
+<p><code>deb-src http://mirrors.ustc.edu.cn/kali-security kali-current/updates main contrib non-free</code></p>
+<p>3) 阿里云kali源</p>
+<p><code>deb http://mirrors.aliyun.com/kali kali-rolling main non-free contrib</code></p>
+<p><code>deb-src http://mirrors.aliyun.com/kali kali-rolling main non-free contrib</code></p>
+<p><code>deb http://mirrors.aliyun.com/kali-security kali-rolling/updates main contrib non-free</code></p>
+<p><code>deb-src http://mirrors.aliyun.com/kali-security kali-rolling/updates main contrib non-free</code></p>
+<p>更新源</p>
+<p><code>apt-get update</code></p>
+<h1 id="在kali里解压已经下载好的docker包"><a href="#在kali里解压已经下载好的docker包" class="headerlink" title="在kali里解压已经下载好的docker包"></a><strong>在kali里解压已经下载好的docker包</strong></h1><p>百度云：<a href="https://pan.baidu.com/s/15NrXVajTGB5P2tN9iu2Uqw" target="_blank" rel="noopener">https://pan.baidu.com/s/15NrXVajTGB5P2tN9iu2Uqw</a></p>
+<p><code>sudo dpkg -i docker-ce_18.03.1~ce-0~debian_amd64.deb</code></p>
+<h1 id="安装完以后开启docker服务"><a href="#安装完以后开启docker服务" class="headerlink" title="安装完以后开启docker服务"></a><strong>安装完以后开启docker服务</strong></h1><p><code>service docker start</code></p>
+<h1 id="docker登录登出"><a href="#docker登录登出" class="headerlink" title="docker登录登出"></a><strong>docker登录登出</strong></h1><p><code>docker login</code></p>
+<p><code>docker logout</code></p>
+<h1 id="从仓库拉镜像到本地，推送镜像至个人仓库"><a href="#从仓库拉镜像到本地，推送镜像至个人仓库" class="headerlink" title="从仓库拉镜像到本地，推送镜像至个人仓库"></a><strong>从仓库拉镜像到本地，推送镜像至个人仓库</strong></h1><p><code>docker search ×××：搜索镜像</code></p>
+<p><code>docker pull ×××：拉一个镜像到本地</code></p>
+<p><code>docker push ×××：推送镜像至个人仓库</code></p>
+<p>例：<br><code>docker pull linode/lamp</code></p>
+<h1 id="查看-删除本地镜像"><a href="#查看-删除本地镜像" class="headerlink" title="查看/删除本地镜像"></a><strong>查看/删除本地镜像</strong></h1><p><code>docker images</code></p>
+<p><code>docker rmi 镜像名</code></p>
+<h1 id="镜像生成容器"><a href="#镜像生成容器" class="headerlink" title="镜像生成容器"></a><strong>镜像生成容器</strong></h1><p><code>docker run [参数] 镜像名或镜像id的前几位/bash/bin</code></p>
+<p>参数:</p>
+<p><code>-i：以交互模式运行容器</code></p>
+<p><code>-d：容器在后台运行</code></p>
+<p><code>-t：启动后进入命令行</code></p>
+<p><code>-p：端口映射</code></p>
+<p><code>-v：挂载文件，可以在外面操作里面的文件</code></p>
+<p>注：镜像名或者镜像id的前三位的后面需要加/bash/bin</p>
+<p>例：<br><code>sudo docker run linode/lamp</code></p>
+<p><code>sudo docker run -p 9527:80 -it linode/lamp</code></p>
+<p>9527是宿主机的端口，80是虚拟机的端口</p>
+<p>检查端口映射情况：</p>
+<p><code>docker port containerid</code></p>
+<h1 id="容器的操作"><a href="#容器的操作" class="headerlink" title="容器的操作"></a><strong>容器的操作</strong></h1><p><code>docker exec -i -t 容器id/bin/bash</code></p>
+<p><code>检测运行中的容器：docker ps</code></p>
+<p><code>开启容器：docker start 容器id</code></p>
+<p><code>停止容器：docker stop 容器id</code></p>
+<p><code>重新开启容器：docker restart 容器id</code></p>
+<p><code>挂起正在运行中的容器的命令行：Ctrl+P+Q</code></p>
+<p><code>链接正在运行的挂起容器：docker attach 容器id</code></p>
+<p><code>删除容器：docker rm 容器id或容器名</code></p>
+<h1 id="容器与本机互传文件"><a href="#容器与本机互传文件" class="headerlink" title="容器与本机互传文件"></a><strong>容器与本机互传文件</strong></h1><p><code>docker cp 本地文件路径 容器id:容器路径</code></p>
+<p><code>docker cp 容器id:容器文件路径 本机路径</code></p>
+<h1 id="镜像保存成文件，文件读取镜像"><a href="#镜像保存成文件，文件读取镜像" class="headerlink" title="镜像保存成文件，文件读取镜像"></a><strong>镜像保存成文件，文件读取镜像</strong></h1><p><code>docker save -o 要保存的文件名 要保存的镜像</code></p>
+<p><code>docker load -i 文件名</code></p>
+<h1 id="docker-linoda-lamp"><a href="#docker-linoda-lamp" class="headerlink" title="docker + linoda/lamp"></a><strong>docker + linoda/lamp</strong></h1><p><code>开启mysql服务：service mysql start</code></p>
+<p><code>开启Apache服务：service apache2 start</code></p>
+
+  </article>
+  <div class="random-toc-area">
+  <button class="btn-hide-toc btn-hide-toc-show" style="display: none" onclick="TOCToggle()">Show TOC</button>
+  <button class="btn-hide-toc btn-hide-toc-hide" onclick="TOCToggle()">Hide TOC</button>
+  <div class="random-toc">
+    <h2>Table of Content</h2>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#docker需要Linux下大于3-10，并且是64位的机器"><span class="toc-text">docker需要Linux下大于3.10，并且是64位的机器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#更新源"><span class="toc-text">更新源</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在kali里解压已经下载好的docker包"><span class="toc-text">在kali里解压已经下载好的docker包</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装完以后开启docker服务"><span class="toc-text">安装完以后开启docker服务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker登录登出"><span class="toc-text">docker登录登出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#从仓库拉镜像到本地，推送镜像至个人仓库"><span class="toc-text">从仓库拉镜像到本地，推送镜像至个人仓库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#查看-删除本地镜像"><span class="toc-text">查看/删除本地镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#镜像生成容器"><span class="toc-text">镜像生成容器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#容器的操作"><span class="toc-text">容器的操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#容器与本机互传文件"><span class="toc-text">容器与本机互传文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#镜像保存成文件，文件读取镜像"><span class="toc-text">镜像保存成文件，文件读取镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker-linoda-lamp"><span class="toc-text">docker + linoda/lamp</span></a></li></ol>
+  </div>
+</div>
+
+  
+<nav id="pagination">
+  
+    <a href="/2018/07/19/DVWA命令执行漏洞/" class="prev">&larr; Prev post DVWA命令执行漏洞</a>
+  
+
+  
+
+  
+    <a href="/2018/07/11/upload-labs/" class="next">Next post upload-labs（1-5） &rarr;</a>
+  
+</nav>
+
+  <!-- JiaThis Button BEGIN -->
+
+<!-- JiaThis Button END -->
+
+
+      
+      
+    </div>
+  </div>
+
+  <div id="bottom-outer">
+    <div id="bottom-inner">
+      Site by 9527 using
+      <a href="http://hexo.io">Hexo</a> & <a href="https://github.com/stiekel/hexo-theme-random">Random</a>
+      <br>
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+<div id="user-card">
+  <div class="center-field">
+    <img class="avatar" src="/background.png">
+    <p id="description"></p>
+    <ul class="social-icon">
+  
+  
+    <li>
+      <a href="https://github.com/Stella9527">
+        
+          <i class="icon iconfont github">&#xe606;</i>
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://weibo.com">
+        
+          <i class="icon iconfont weibo">&#xe602;</i>
+        
+      </a>
+    </li>
+  
+    <li>
+      <a href="http://www.douban.com">
+        
+          <i class="icon iconfont douban">&#xe60f;</i>
+        
+      </a>
+    </li>
+  
+</ul>
+  </div>
+</div>
+
+
+<div id="btn-view">Hide</div>
+
+<script>
+// is trigger analytics / tongji script
+var isIgnoreHost = false;
+
+if(window && window.location && window.location.host) {
+  isIgnoreHost = ["localhost","127.0.0.1"].some(function(address){
+    return 0 === window.location.host.indexOf(address);
+  });
+}
+
+var isTriggerAnalytics = !( true && isIgnoreHost );
+
+</script>
+
+
+
+
+  
+  
+    <script src="/js/jquery-2.2.3.min.js"></script>
+  
+    <script src="/js/vegas.min.js"></script>
+  
+    <script src="/js/random.js"></script>
+  
+    <script src="/js/highlight.pack.js"></script>
+  
+    <script src="/js/jquery.mousewheel.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox.pack.js"></script>
+  
+    <script src="/js/jquery.fancybox-thumbs.js"></script>
+  
+    <script src="/js/plyr.js"></script>
+  
+
+<script>
+
+  // fancybox
+  var backgroundImages = [];
+  
+  $('#post').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox') || $(this).parent().hasClass('fancybox-thumb')) return;
+      var alt = this.alt || this.title;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'post' + i);
+    });
+  });
+  $(".fancybox").fancybox();
+
+var vegasConfig = {"preload­Image":true,"transition":["slideLeft2","slideRight2","flash2"],"timer":true,"delay":5000,"shuffle":true,"count":28};
+var unsplashConfig = {"gravity":"north"};
+// is show background images
+var turnoffBackgroundImage = false;
+
+
+
+  turnoffBackgroundImage = true;
+
+
+var backgroundColor = "E6E6FA";
+
+$(".fancybox-thumb").fancybox({
+  prevEffect: 'none',
+  nextEffect: 'none',
+  helpers: {
+    title: {
+      type: 'outside'
+    },
+    thumbs: {
+      width: 50,
+      height: 50
+    }
+  }
+});
+
+// show video with plyr
+$(".video-container iframe").each(function(i){
+  var url = $(this).attr('src');
+  var id = url.split('/').pop();
+  var plyrContainer = document.createElement('div');
+  plyrContainer.className = 'plyr';
+  var plyrElement = document.createElement('div');
+  plyrElement.dataset.videoId = id;
+  switch(true) {
+    case url.search('youtube.com') >= 0:
+      plyrElement.dataset.type = 'youtube';
+      break;
+    case url.search('vimeo.com') >= 0:
+      plyrElement.dataset.type = 'vimeo';
+      break;
+    default:
+      return;
+  };
+  plyrContainer.appendChild(plyrElement);
+  $(this).parent().html(plyrContainer);
+});
+plyr.setup('.plyr', {iconUrl: '/css/sprite.svg'});
+</script>
+</body>
+</html>
+
